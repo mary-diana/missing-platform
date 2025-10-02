@@ -30,6 +30,7 @@ export default function Organizations() {
     description: "",
     reason: "",
     role: "organization",
+    code: "",
   });
 
   // Fetch organizations
@@ -56,9 +57,10 @@ export default function Organizations() {
     if (
       !formOrg.name.trim() ||
       !formOrg.email.trim() ||
-      !numberAsString.trim()
+      !numberAsString.trim() ||
+      !formOrg.code.trim()
     ) {
-      alert("Please fill out all required fields: Name, Email, and Number");
+      alert("Please fill out all required fields: Name, Email and Number");
       return;
     }
     try {
@@ -92,6 +94,7 @@ export default function Organizations() {
       description: org.description || "",
       reason: org.reason || "",
       role: org.role || "organization",
+      code: org.code || "",
     });
     setShowForm(true);
   };
@@ -102,7 +105,8 @@ export default function Organizations() {
     if (
       !formOrg.name.trim() ||
       !formOrg.email.trim() ||
-      !numberAsString.trim()
+      !numberAsString.trim()||
+      !formOrg.code.trim()
     ) {
       alert("Please fill out all required fields: Name, Email, and Number");
       return;
@@ -147,6 +151,7 @@ export default function Organizations() {
       description: "",
       reason: "",
       role: "organization",
+      code: "",
     });
   };
 
@@ -162,7 +167,7 @@ export default function Organizations() {
       const adminsRef = collection(db, "adminusers");
       const adminSnapshot = await getDocs(adminsRef);
       const allowedEmails = adminSnapshot.docs
-      .filter(doc => ["Administrator"].includes(doc.data().role))
+      .filter(doc => ["Administrator"].includes(doc.data().orgrole))
       .map(doc => doc.data().email);
       setIsUserAdmin(allowedEmails.includes(userEmail));
       } catch (error) {
@@ -174,18 +179,13 @@ export default function Organizations() {
             // Check admin status on component load and auth state change
             useEffect(() => {
               const auth = getAuth();
-              // Listen for authentication state changes
               const unsubscribe = onAuthStateChanged(auth, (user) => {
                 if (user) {
-                  // User is signed in, check their admin status
                   fetchAdminStatus(user.email);
                 } else {
-                  // User is signed out, clear admin status
                   setIsUserAdmin(false);
                 }
               });
-        
-          // Cleanup subscription on component unmount
           return () => unsubscribe();
         }, []);
 
@@ -194,11 +194,9 @@ export default function Organizations() {
     const nameMatch = org?.name?.toLowerCase().includes(search.toLowerCase());
     const emailMatch = org?.email?.toLowerCase().includes(search.toLowerCase());
     const countyMatch = org?.county?.toLowerCase().includes(search.toLowerCase());
-    const locationMatch = org?.location?.toLowerCase().includes(search.toLowerCase());
-    return nameMatch || emailMatch || countyMatch || locationMatch;
+    const codeMatch = org?.code?.toLowerCase().includes(search.toLowerCase());
+    return nameMatch || emailMatch || countyMatch || codeMatch;
   });
-
-  
 
   if (loading) {
     return <div className="text-center mt-10">Loading organizations...</div>;
@@ -226,7 +224,7 @@ export default function Organizations() {
       <div className="mb-6">
         <input
           type="text"
-          placeholder="Search by name, email, county, or location"
+          placeholder="Search by name, email, county or code"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full px-4 py-2 border rounded-lg shadow-sm focus:ring focus:ring-blue-300"
@@ -240,10 +238,10 @@ export default function Organizations() {
             <tr>
               <th className="px-4 py-3">Name</th>
               <th className="px-4 py-3">Email</th>
-                <th className="px-4 py-3">Description</th>
+              <th className="px-4 py-3">Code</th>
+              <th className="px-4 py-3">Description</th>
               <th className="px-4 py-3">Contact</th>
               <th className="px-4 py-3">County</th>
-              <th className="px-4 py-3">Location</th>
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
@@ -252,10 +250,10 @@ export default function Organizations() {
               <tr key={org.id} className="border-t">
                 <td className="px-4 py-3">{org.name || "N/A"}</td>
                 <td className="px-4 py-3 text-blue-600">{org.email || "N/A"}</td>
+                <td className="px-4 py-3 ">{org.code || "N/A"}</td>
                 <td className="px-4 py-3 ">{org.description || "N/A"}</td>
                 <td className="px-4 py-3">{org.number || "N/A"}</td>
                 <td className="px-4 py-3">{org.county || "N/A"}</td>
-                <td className="px-4 py-3">{org.location || "N/A"}</td>
                 <td className="px-4 py-3 text-right flex gap-3 justify-end">
                   {isUserAdmin && (
                   <button
@@ -312,6 +310,15 @@ export default function Organizations() {
               value={formOrg.email}
               onChange={(e) =>
                 setFormOrg({ ...formOrg, email: e.target.value })
+              }
+              className="w-full px-3 py-2 border rounded mb-3"
+            />
+            <input
+              type="text"
+              placeholder="Code"
+              value={formOrg.code}
+              onChange={(e) =>
+                setFormOrg({ ...formOrg, code: e.target.value })
               }
               className="w-full px-3 py-2 border rounded mb-3"
             />

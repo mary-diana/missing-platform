@@ -16,7 +16,8 @@ import {
   getDocs,
   writeBatch,
 } from "firebase/firestore";
-import { FaCheckCircle, FaExclamationCircle, FaTimesCircle } from 'react-icons/fa';
+import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+
 
 
 // --- tiny util: check if URL is a video
@@ -113,7 +114,7 @@ export default function AccountPage() {
           setProfile((prev) => ({ ...prev, email: firebaseUser.email }));
         }
 
-        // --- Post-related subscriptions (moved from YourPostsPage) ---
+        // --- Post-related subscriptions ---
         const unsubDanger = onSnapshot(
           query(collection(db, "dangerReports"), where("reportedBy", "==", myUid)),
           (snap) => {
@@ -281,7 +282,7 @@ export default function AccountPage() {
     setLongPressTimer(null);
   };
   
-  // --- Post-related functions (moved from YourPostsPage) ---
+  // --- Post-related functions  ---
   const toggleComments = async (post) => {
     const isOpen = expandedPostIds.has(post.id);
     const next = new Set(expandedPostIds);
@@ -364,7 +365,8 @@ export default function AccountPage() {
     );
   };
 
-  if (loading) return <div className="text-center mt-10">Loading...</div>;
+  if (loading) return <div className="text-center mt-10 ">Loading...</div>;
+  
 
   return (
     <div className="max-w-6xl mx-auto p-6 flex space-x-8">
@@ -665,7 +667,7 @@ export default function AccountPage() {
           will appear here automatically.
         </p>
         
-        <p className="text-sm text-red-600">
+        <p className="text-sm text-yellow-400">
           Reminder: If your posts are rejected, we request to delete it immediately. Failure to
           comply may result to deletion of the post without prior notice or permission.
         </p>

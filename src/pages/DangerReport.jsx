@@ -6,6 +6,7 @@ import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/fire
 import { supabase } from "../supabaseClient";
 import { GeoPoint } from "firebase/firestore";
 
+
 export default function DangerReport() {
   const [form, setForm] = useState({
     category: "",
@@ -33,7 +34,7 @@ export default function DangerReport() {
     const { name, value, files } = e.target;
     if (files) {
       const fileArray = Array.from(files);
-      const updatedMedia = [...form.media, ...fileArray]; // ✅ Combine old and new files
+      const updatedMedia = [...form.media, ...fileArray]; // Combine old and new files
 
       setForm((prev) => ({ ...prev, [name]: updatedMedia }));
 
@@ -47,7 +48,7 @@ export default function DangerReport() {
     }
   };
   
-  // ✅ New function to handle removing media
+  //  function to handle removing media
   const handleRemoveMedia = (indexToRemove) => {
     // Filter the files in the form state
     const newMedia = form.media.filter((_, index) => index !== indexToRemove);
@@ -90,7 +91,8 @@ export default function DangerReport() {
 
         mediaURLs.push(publicData.publicUrl);
       }
-
+      
+      // Geocode location using Nominatim
       const query = `${form.location}, ${form.county}, Kenya`;
       const geoRes = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`,
@@ -154,7 +156,7 @@ export default function DangerReport() {
     <div className="p-6 max-w-lg mx-auto">
       <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
         <ExclamationTriangleIcon className="w-6 h-6 text-red-600" />
-        Report a Danger
+        Report Danger
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">

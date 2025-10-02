@@ -284,7 +284,7 @@ export default function RecentReports() {
     const reportId = openPost.id.split('-')[1];
 
     try {
-      // 1. Save comment to Firestore
+      //  Save comment to Firestore
       const commentData = {
         comment_text: newComment,
         report_id: reportId,

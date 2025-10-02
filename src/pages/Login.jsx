@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "../firebase"; // Assuming `db` is your Firestore instance
-import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "../firebase";
+import { doc, getDoc , collection, query, where, getDocs} from "firebase/firestore";
 
 export default function Login() {
   const [credentials, setCredentials] = useState({
     email: "",
     password: "",
+    selectedType: "citizen",
   });
   const navigate = useNavigate();
 
@@ -15,57 +16,60 @@ export default function Login() {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const { email, password, selectedType } = credentials;
+
     try {
         // Step 1: Authenticate the user with Firebase
         const userCredential = await signInWithEmailAndPassword(
             auth,
-            credentials.email,
-            credentials.password
+            email,
+            password
         );
         const user = userCredential.user;
 
-        // Step 2: Attempt to find the user in the 'adminusers' collection first
-        const adminDocRef = doc(db, "adminusers", user.uid);
-        const adminDocSnap = await getDoc(adminDocRef);
+        if (selectedType === "organization") {
+            // --- ORGANIZATION LOGIN ATTEMPT ---
+            // Query the 'adminusers' collection for the user's email
+            const q = query(collection(db, "adminusers"), where("email", "==", user.email));
+            const querySnapshot = await getDocs(q);
 
-        let userRole = null; // Initialize role as null
+            if (!querySnapshot.empty) {
+                // Get the first document from the results
+                const adminDocSnap = querySnapshot.docs[0];
+                const data = adminDocSnap.data();
 
-        if (adminDocSnap.exists()) {
-            userRole = adminDocSnap.data().role;
-            // Now, redirect based on the role found in adminusers
-            if (["Administrator", "Moderator"].includes(userRole)) {
-                localStorage.setItem("role", "organization");
-                navigate("/admin/dashboard");
-                return; // Exit the function to prevent further checks
+                // Check if the user document has the role of 'organization'
+                if (data.role === "organization") {
+                    localStorage.setItem("role", "organization");
+                    navigate("/admin/dashboard");
+                    return;
+                }
             }
-        }
 
-        // Step 3: If not found in 'adminusers', check the 'users' collection
-        const userDocRef = doc(db, "users", user.uid);
-        const userDocSnap = await getDoc(userDocRef);
+            // If no document is found or the role is incorrect
+            alert("Access Denied. Organization account not found or role is incorrect.");
+        } else { // selectedType === "citizen"
+            // --- CITIZEN LOGIN ATTEMPT ---
+            const citizenDocRef = doc(db, "users", user.uid);
+            const citizenDocSnap = await getDoc(citizenDocRef);
 
-        if (userDocSnap.exists()) {
-            userRole = userDocSnap.data().role;
-            // Now, redirect based on the role found in users
-            if (userRole === "Citizen") { // Assuming 'Citizen' is the role for regular users
-                localStorage.setItem("role", "citizen");
-                navigate("/");
-                return;
+            if (citizenDocSnap.exists()) {
+                const data = citizenDocSnap.data();
+                if (data.role === "citizen") {
+                    localStorage.setItem("role", "citizen");
+                    navigate("/");
+                    return;
+                }
             }
+            
+            alert("Access Denied. Citizen account not found or role is incorrect.");
         }
-
-        // If no role is found in either collection, or it's an unrecognized role,
-        // you might want to handle this case (e.g., redirect to a restricted page).
-        alert("Your account role could not be determined. Please contact support.");
-        navigate("/login"); // Redirect back to login or an error page
-
     } catch (error) {
         alert(error.message);
     }
 };
-
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
@@ -89,7 +93,16 @@ const handleSubmit = async (e) => {
             className="w-full border rounded px-3 py-2"
             required
           />
-          
+          <select
+            name="selectedType"
+            value={credentials.selectedType}
+            onChange={handleChange}
+            className="w-full border rounded px-3 py-2"
+            required
+          >
+            <option value="citizen">Citizen</option>
+            <option value="organization">Organization</option>
+          </select>
           <button
             type="submit"
             className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"

@@ -1,16 +1,18 @@
 // src/admin/components/Sidebar.jsx
 import React from "react";
 import { Link } from "react-router-dom";
-import { Home, FileText, Users, BarChart2, Megaphone, Building } from "lucide-react";
+import { Home, FileText, Users, BarChart2, Megaphone, Building,UserPlus,Lightbulb } from "lucide-react";
 
 export default function Sidebar() {
   const menuItems = [
-    { name: "Dashboard", icon: <Home size={18} />, path: "/admin/dashboard" },
-    { name: "Reports", icon: <FileText size={18} />, path: "/admin/reports" },
-    { name: "Users", icon: <Users size={18} />, path: "/admin/users" },
-    { name: "Organizations", icon: <Building size={18} />, path: "/admin/organizations" },
-    { name: "Statistics", icon: <BarChart2 size={18} />, path: "/admin/statistics" },
-    { name: "Announcements", icon: <Megaphone size={18} />, path: "/admin/announcements" },
+    { name: "Dashboard", icon: <Home size={18} color="blue"/>, path: "/admin/dashboard" },
+    { name: "Reports", icon: <FileText size={18}  color="blue"/>, path: "/admin/reports" },
+    { name: "Users", icon: <Users size={18} color="blue"/>, path: "/admin/users" },
+    { name: "Organizations", icon: <Building size={18} color="blue"/>, path: "/admin/organizations" },
+    { name: "Volunteers", icon: <UserPlus size={18} color="blue"/>, path: "/admin/volunteers" },
+    { name: "Statistics", icon: <BarChart2 size={18} color="blue" />, path: "/admin/statistics" },
+    { name: "Leads", icon: <Lightbulb size={18} color="blue" />, path: "/admin/leads" },
+    { name: "Announcements", icon: <Megaphone size={18} color="blue" />, path: "/admin/announcements" },
   ];
 
   return (

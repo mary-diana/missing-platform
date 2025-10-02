@@ -30,12 +30,11 @@ const blueIcon = new L.Icon({
 
 // A custom component to handle search and map view changes
 function MapController({ searchQuery }) {
-  const map = useMap(); // Get the map instance
+  const map = useMap(); //  map instance
 
   useEffect(() => {
-    // We only perform the search if the search query is not empty
     if (searchQuery) {
-      // Use a geocoding service (e.g., Nominatim)
+      // Use a geocoding service ( Nominatim)
       // Incase you do  want to search outside Kenya, use this ''https://nominatim.openstreetmap.org/search?q=${searchQuery}&format=json''
       fetch(`https://nominatim.openstreetmap.org/search?q=${searchQuery}&countrycodes=ke&format=json`)
         .then(res => res.json())
@@ -105,7 +104,7 @@ export default function CommunityMap() {
             };
         });
 
-        // ✅ Filter out reports with a null position before setting the state
+        //  Filter out reports with a null position before setting the state
         const allReports = [...dangerData, ...missingData].filter(report => report.position !== null);
         setReports(allReports);
       } catch (error) {
@@ -140,7 +139,7 @@ export default function CommunityMap() {
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-      {/* ✅ Back Button */}
+      {/*  Back Button */}
       <button
         onClick={() => navigate(-1)}
         className="mb-4 px-4 py-2 bg-yellow-300 text-gray-700 rounded-lg hover:bg-gray-300"
@@ -202,7 +201,7 @@ export default function CommunityMap() {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
 
-          {/* ✅ The new component to control map view */}
+          {/* The new component to control map view */}
           <MapController searchQuery={searchQuery} />
 
           {/* Simplified rendering logic */}

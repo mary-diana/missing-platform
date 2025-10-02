@@ -1,5 +1,5 @@
 import React from "react";
-import Sidebar from "../components/Sidebar"; // adjust path if needed
+import Sidebar from "../components/Sidebar";
 
 export default function AdminLayout({ children }) {
   return (

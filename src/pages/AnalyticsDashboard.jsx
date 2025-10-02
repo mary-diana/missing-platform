@@ -186,7 +186,7 @@ export default function AnalyticsDashboard() {
 
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-8">
-      {/* ✅ Back Button */}
+      {/*  Back Button */}
       <button
         onClick={() => navigate(-1)}
         className="mb-4 px-4 py-2 bg-yellow-300 text-gray-700 rounded-lg hover:bg-gray-300"
@@ -373,7 +373,7 @@ export default function AnalyticsDashboard() {
                   dataKey="value"
                   nameKey="name"
                   outerRadius={80}
-                  label={percentLabel}  // ✅ percent labels
+                  label={percentLabel}  
                 >
                   {genderData.map((_, idx) => (
                     <Cell key={idx} fill={pieColors[idx % pieColors.length]} />
@@ -401,7 +401,7 @@ export default function AnalyticsDashboard() {
                   dataKey="value"
                   nameKey="name"
                   outerRadius={80}
-                  label={percentLabel}  // ✅ percent labels
+                  label={percentLabel}  
                 >
                   {ageData.map((_, idx) => (
                     <Cell key={idx} fill={pieColors[idx % pieColors.length]} />
@@ -428,7 +428,7 @@ export default function AnalyticsDashboard() {
                   dataKey="value"
                   nameKey="name"
                   outerRadius={80}
-                  label={percentLabel}  // ✅ percent labels
+                  label={percentLabel}  
                 >
                   {countyData.map((_, idx) => (
                     <Cell key={idx} fill={pieColors[idx % pieColors.length]} />

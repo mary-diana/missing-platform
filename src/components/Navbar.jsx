@@ -33,6 +33,7 @@ export default function Navbar() {
           <Link to="/missing-persons" className="hover:text-blue-500">Chat</Link>
           <Link to="/create-report" className="hover:text-blue-500">Report Missing Person</Link>
           <Link to="/create-danger-report" className="hover:text-blue-500">Report Dangers</Link>
+          <Link to="/help-support" className="hover:text-blue-500"> Support</Link>
 
           {/* Button */}
           <Link to="/signup" className="bg-yellow-400 hover:bg-yellow-500 transition px-4 py-1 rounded font-semibold">

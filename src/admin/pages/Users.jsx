@@ -24,9 +24,10 @@ export default function AdminUsers() {
   const [formUser, setFormUser] = useState({
     name: "",
     email: "",
-    role: "User",
+    orgrole: "User",
     contact: "",
-    organization: "",
+    orgname: "",
+    role: "organization",
   });
 
   // Fetch users
@@ -69,9 +70,10 @@ export default function AdminUsers() {
     setFormUser({
       name: user.name,
       email: user.email,
-      role: user.role || "User",
+      orgrole: user.orgrole || "User",
       contact: user.contact || "",
-      organization: user.organization || "",
+      orgname: user.orgname || "",
+      role: "organization",
     });
     setShowForm(true);
   };
@@ -114,7 +116,7 @@ export default function AdminUsers() {
     setShowForm(false);
     setEditMode(false);
     setSelectedUser(null);
-    setFormUser({ name: "", email: "", role: "User" });
+    setFormUser({ name: "", email: "", orgrole: "User" });
   };
 
   // Safe search filter
@@ -138,7 +140,7 @@ export default function AdminUsers() {
     const adminsRef = collection(db, "adminusers");
     const adminSnapshot = await getDocs(adminsRef);
     const allowedEmails = adminSnapshot.docs
-    .filter(doc => ["Administrator"].includes(doc.data().role))
+    .filter(doc => ["Administrator"].includes(doc.data().orgrole))
     .map(doc => doc.data().email);
     setIsUserAdmin(allowedEmails.includes(userEmail));
     } catch (error) {
@@ -150,13 +152,10 @@ export default function AdminUsers() {
     // Check admin status on component load and auth state change
     useEffect(() => {
       const auth = getAuth();
-      // Listen for authentication state changes
       const unsubscribe = onAuthStateChanged(auth, (user) => {
         if (user) {
-          // User is signed in, check their admin status
           fetchAdminStatus(user.email);
         } else {
-          // User is signed out, clear admin status
           setIsUserAdmin(false);
         }
       });
@@ -218,17 +217,17 @@ export default function AdminUsers() {
                 <td className="px-4 py-3">
                   <span
                     className={`px-3 py-1 rounded-full text-xs ${
-                      user.role === "Administrator"
+                      user.orgrole === "Administrator"
                         ? "bg-gray-300"
-                        : user.role === "Moderator"
+                        : user.orgrole === "Moderator"
                         ? "bg-blue-200"
                         : "bg-gray-100"
                     }`}
                   >
-                    {user.role || "N/A"}
+                    {user.orgrole || "N/A"}
                   </span>
                 </td>
-                <td className="px-4 py-3">{user.organization || "N/A"}</td>
+                <td className="px-4 py-3">{user.orgname || "N/A"}</td>
                 <td className="px-4 py-3 text-right flex gap-3 justify-end">
                   {isUserAdmin && (
                   <button
@@ -304,17 +303,17 @@ export default function AdminUsers() {
             <input
               type="text"
               placeholder="Organization Name"
-              value={formUser.organization}
+              value={formUser.orgname}
               onChange={(e) =>
-                setFormUser({ ...formUser, organization: e.target.value })
+                setFormUser({ ...formUser, orgname: e.target.value })
               }
               className="w-full px-3 py-2 border rounded mb-3"
             />
 
             <select
-              value={formUser.role}
+              value={formUser.orgrole}
               onChange={(e) =>
-                setFormUser({ ...formUser, role: e.target.value })
+                setFormUser({ ...formUser, orgrole: e.target.value })
               }
               className="w-full px-3 py-2 border rounded mb-3"
             >

@@ -1,4 +1,4 @@
-// src/admin/pages/Reports.jsx
+
 import React, { useEffect, useState } from "react";
 import {
   getFirestore,
@@ -9,7 +9,7 @@ import {
   deleteDoc, 
   getDocs, 
 } from "firebase/firestore";
-import { getAuth, onAuthStateChanged } from "firebase/auth"; // ⭐ NEW: Import Auth functions
+import { getAuth, onAuthStateChanged } from "firebase/auth"; 
 
 // --- tiny util: check if URL is a video
 const isVideo = (url) => {
@@ -28,7 +28,7 @@ export default function Reports() {
   const [loading, setLoading] = useState(true);
   const [selectedReport, setSelectedReport] = useState(null);
 
-  // State for admin user check
+  // State for admin user check- reuse thisd in other admin pages
   const [isUserAdmin, setIsUserAdmin] = useState(false);
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function Reports() {
         const adminsRef = collection(db, "adminusers");
         const adminSnapshot = await getDocs(adminsRef);
         const allowedEmails = adminSnapshot.docs
-        .filter(doc => ["Administrator", "Moderator"].includes(doc.data().role))
+        .filter(doc => ["Administrator", "Moderator"].includes(doc.data().orgrole))
         .map(doc => doc.data().email);
         setIsUserAdmin(allowedEmails.includes(userEmail));
       } catch (error) {
@@ -277,7 +277,7 @@ export default function Reports() {
                     ? report.submittedWhen.toDate().toLocaleDateString()
                     : "N/A"}
                 </td>
-                <td className="px-4 py-3 text-right space-x-3">
+                <td className="px-2 py-4 text-right space-x-2">
                   <button
                     onClick={() => setSelectedReport(report)}
                     className="text-indigo-600 hover:underline"
@@ -369,7 +369,7 @@ export default function Reports() {
             <p><strong>Location:</strong> {selectedReport.location}</p>
             </div>
             <p><strong>Status:</strong> {getStatus(selectedReport)}</p>
-            <p><strong>Description:</strong> {selectedReport.description || selectedReport.lastSeen|| "N/A"}</p>
+            <p className="text-sm"><strong>Description:</strong> {selectedReport.description || selectedReport.lastSeen|| "N/A"}</p>
             {selectedReport.missingPersonName && (
               <p><strong>Missing Person:</strong> {selectedReport.missingPersonName}</p>
             )}

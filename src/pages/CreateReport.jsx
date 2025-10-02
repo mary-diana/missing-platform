@@ -117,7 +117,7 @@ export default function CreateReport({ onReportSubmit }) {
         const fileName = `${Date.now()}-${file.name}`;
         const { error: uploadError } = await supabase
           .storage
-          .from("missing-reports") // bucket name
+          .from("missing-reports") // bucket name, remember to match and use different buckets for different report types
           .upload(fileName, file);
 
         if (uploadError) throw uploadError;
@@ -131,7 +131,7 @@ export default function CreateReport({ onReportSubmit }) {
       }
 
       //  Create GeoPoint
-      // ✅ Geocode location + county via OpenStreetMap
+      //  Geocode location + county via OpenStreetMap
       const query = `${form.location}, ${form.county}, Kenya`;
       const geoRes = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`,
@@ -172,7 +172,7 @@ export default function CreateReport({ onReportSubmit }) {
         contact: form.contact 
       };
 
-       // 3️⃣ Save to Firestore
+       // 3 Save to Firestore
       await addDoc(collection(db, "missingPersonsReports"), report);
 
       // Call parent callback if provided

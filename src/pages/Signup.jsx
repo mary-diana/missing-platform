@@ -5,7 +5,7 @@ import { auth } from "../firebase";
 import { getFirestore, doc, setDoc ,addDoc, collection} from "firebase/firestore";
 
 export default function Signup() {
-  const [role, setRole] = useState("citizen"); // tabs state
+  const [role, setRole] = useState("citizen"); 
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -111,7 +111,7 @@ export default function Signup() {
           <input
             type="text"
             name="name"
-            placeholder="Full Name/Organization Name"
+            placeholder="Full Name"
             value={formData.name}
             onChange={handleChange}
             className="w-full border rounded px-3 py-2"

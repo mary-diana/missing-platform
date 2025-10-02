@@ -32,7 +32,7 @@ export default function LandingPage() {
             <h1 className="text-4xl font-bold mb-3">Help Bring Them Home</h1>
             <p className="max-w-xl text-sm mb-6">
               Join our community dedicated to finding missing persons and report danger.
-              Every search, every report brings us closer to reuniting families.
+              Every search and every report brings us closer to reuniting families.
             </p>
             {/* Search Bar */}
             <div className="flex bg-white rounded-lg shadow overflow-hidden">
