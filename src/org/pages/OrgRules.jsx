@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import downloadImage from "../../assets/download.jfif";
 
-export default function AdminDashboard() {
+export default function OrgRules() {
   // Static org info
   const [orgInfo] = useState({
     name: "Find Them",

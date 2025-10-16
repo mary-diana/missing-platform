@@ -4,7 +4,7 @@ import { collection, getDocs, doc, getDoc, updateDoc } from "firebase/firestore"
 import { db } from "../../firebase";
 import { getAuth } from "firebase/auth";
 
-export default function AdminVolunteerManagement() {
+export default function OrgVolunteerManagement() {
   const [volunteers, setVolunteers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCounty, setSelectedCounty] = useState("");
@@ -15,6 +15,7 @@ export default function AdminVolunteerManagement() {
   const [leaderContact, setLeaderContact] = useState("");
   const [task, setTask] = useState("");
   const [timePeriod, setTimePeriod] = useState("");
+  const [assignedOrg, setAssignedOrg] = useState("");
   const [assignmentStatus, setAssignmentStatus] = useState("Pending");
   const [showModal, setShowModal] = useState(false);
   const [isDone, setIsDone] = useState(false);
@@ -36,7 +37,7 @@ export default function AdminVolunteerManagement() {
         const adminsRef = collection(db, "adminusers"); 
         const adminSnapshot = await getDocs(adminsRef);
         const allowedEmails = adminSnapshot.docs
-        .filter(doc => ["Administrator","User","Volunteer"].includes(doc.data().orgrole))
+        .filter(doc => ["Administrator","Volunteer"].includes(doc.data().orgrole))
         .map(doc => doc.data().email);
         setIsUserAdmin(allowedEmails.includes(userEmail));
       } catch (error) {
@@ -86,6 +87,7 @@ export default function AdminVolunteerManagement() {
           const data = snap.data();
           setLeaderName(data.leaderName || "");
           setLeaderContact(data.leaderContact || "");
+          setAssignedOrg(data.assignedOrg || "");
           setTask(data.task || "");
           setTimePeriod(data.timePeriod || "");
           setAssignmentStatus(data.assignmentStatus || "Pending");
@@ -120,25 +122,47 @@ export default function AdminVolunteerManagement() {
   const handleSaveAssignment = async () => {
     if (!selectedVolunteer) return;
 
-    try {
-      const volunteerRef = doc(db, "volunteer", selectedVolunteer.id);
-      await updateDoc(volunteerRef, {
+    // Data payload for the update
+    const updateData = {
         leaderName,
         leaderContact,
         task,
         timePeriod,
         assignmentStatus,
+        assignedOrg,
         assignedAt: new Date().toISOString(),
-      });
+    };
 
-      alert("Assignment updated successfully!");
-      setShowModal(false);
+    try {
+        const volunteerRef = doc(db, "volunteer", selectedVolunteer.id);
+        
+        // 1. Update the database
+        await updateDoc(volunteerRef, updateData);
+
+        // 2. 🚀 Update the main list of volunteers (volunteers state)
+        setVolunteers(prevVolunteers => 
+            prevVolunteers.map(v => 
+                v.id === selectedVolunteer.id 
+                    // If IDs match, merge the new assignment data
+                    ? { ...v, ...updateData } 
+                    : v
+            )
+        );
+
+        // 3. 🚀 Update the selectedVolunteer state
+        setSelectedVolunteer(prevSelected => ({
+            ...prevSelected,
+            ...updateData
+        }));
+
+        alert("Assignment updated successfully!");
+        setShowModal(false);
+
     } catch (error) {
-      console.error("Error updating volunteer:", error);
-      alert("Failed to update assignment.");
+        console.error("Error updating volunteer:", error);
+        alert("Failed to update assignment.");
     }
-  };
-
+};
 
   const handleMarkDone = async () => {
     try {
@@ -314,6 +338,20 @@ export default function AdminVolunteerManagement() {
                 <p><strong>Location:</strong> {selectedVolunteer.location}</p>
                 <p><strong>Availability:</strong> {selectedVolunteer.availability}</p>
                 <p><strong>Assigned At:</strong> {selectedVolunteer.assignedAt || "N/A"}</p>
+                <p>
+                <strong>Assignment Status:</strong>{" "}
+                <span
+                  className={
+                    selectedVolunteer.assignmentStatus === "Done"
+                      ? "text-green-600 font-semibold"
+                      : selectedVolunteer.assignmentStatus === "In Progress"
+                      ? "text-yellow-600 font-semibold"
+                      : "text-red-600 font-semibold"
+                  }
+                >
+                  {selectedVolunteer.assignmentStatus || "N/A"}
+                </span>
+              </p>
             </div>
 
             <hr className="mb-4" />
@@ -352,6 +390,16 @@ export default function AdminVolunteerManagement() {
                                 className="border rounded w-full px-2 py-1"
                                 value={leaderContact}
                                 onChange={(e) => setLeaderContact(e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <label className="text-sm font-medium">Assignment Method</label>
+                            <input
+                                type="text"
+                                placeholder="Organization Name or Self-assigned"
+                                className="border rounded w-full px-2 py-1"
+                                value={assignedOrg}
+                                onChange={(e) => setAssignedOrg(e.target.value)}
                             />
                         </div>
                         <div className="col-span-2">

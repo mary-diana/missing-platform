@@ -18,7 +18,7 @@ const isVideo = (url) => {
   return lowerUrl.endsWith(".mp4") || lowerUrl.endsWith(".mov") || lowerUrl.endsWith(".webm");
 };
 
-export default function Reports() {
+export default function OrgReports() {
   const db = getFirestore();
   const [reports, setReports] = useState([]);
   const [search, setSearch] = useState("");
@@ -44,7 +44,7 @@ export default function Reports() {
         const adminsRef = collection(db, "adminusers");
         const adminSnapshot = await getDocs(adminsRef);
         const allowedEmails = adminSnapshot.docs
-        .filter(doc => ["Administrator", "Moderator", "Police"].includes(doc.data().orgrole))
+        .filter(doc => ["Administrator", "Moderator"].includes(doc.data().orgrole))
         .map(doc => doc.data().email);
         setIsUserAdmin(allowedEmails.includes(userEmail));
       } catch (error) {

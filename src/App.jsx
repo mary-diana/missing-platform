@@ -23,11 +23,18 @@ import AdminLayout from "./admin/pages/AdminLayout";
 import AdminDashboard from "./admin/pages/AdminDashboard";
 import Reports from "./admin/pages/Reports";
 import AdminUsers from "./admin/pages/Users";
-import Statistics from "./admin/pages/Statistics";
 import Announcements from "./admin/pages/Announcements";
 import Organizations from "./admin/pages/Organization";
 import AdminVolunteer from "./admin/pages/AdminVolunteer";
 import LeadsManagement from "./admin/pages/AdminLeads";
+
+//Organizations
+import OrgDashboard from "./org/pages/OrgDashboard";
+import OrgLayout from "./org/pages/OrgLayout";
+import OrgLeads from "./org/pages/OrgLeads";
+import OrgAnnouncements from "./org/pages/OrgAnnouncements";
+import OrgReports from "./org/pages/OrgReports";
+import OrgVolunteerManagement from "./org/pages/OrgVolunteer";
 
 // Auth Context & Protected Route
 import { AuthProvider } from "./context/AuthContext";
@@ -77,11 +84,17 @@ function App() {
           <Route path="/admin/dashboard" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
           <Route path="/admin/reports" element={<AdminLayout><Reports /></AdminLayout>} />
           <Route path="/admin/users" element={<AdminLayout><AdminUsers /></AdminLayout>} />
-          <Route path="/admin/statistics" element={<AdminLayout><Statistics /></AdminLayout>} />
           <Route path="/admin/announcements" element={<AdminLayout><Announcements /></AdminLayout>} />
           <Route path="/admin/organizations" element={<AdminLayout><Organizations /></AdminLayout>} />
           <Route path="/admin/volunteers" element={<AdminLayout><AdminVolunteer /></AdminLayout>} />
           <Route path="/admin/leads" element={<AdminLayout><LeadsManagement /></AdminLayout>} />
+
+          {/* Organization Pages */}
+          <Route path="/org/dashboard" element={<OrgLayout><OrgDashboard /></OrgLayout>} />
+          <Route path="/org/leads" element={<OrgLayout><OrgLeads /></OrgLayout>} />
+          <Route path="/org/announcements" element={<OrgLayout><OrgAnnouncements /></OrgLayout>} />
+          <Route path="/org/reports" element={<OrgLayout><OrgReports /></OrgLayout>} />
+          <Route path="/org/volunteers" element={<OrgLayout><OrgVolunteerManagement /></OrgLayout>} />
         </Routes>
       </Router>
     </AuthProvider>

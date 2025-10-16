@@ -31,6 +31,7 @@ export default function Organizations() {
     reason: "",
     role: "organization",
     code: "",
+    noofusers: "",
   });
 
   // Fetch organizations
@@ -95,6 +96,7 @@ export default function Organizations() {
       reason: org.reason || "",
       role: org.role || "organization",
       code: org.code || "",
+      noofusers: org.noofusers || "",
     });
     setShowForm(true);
   };
@@ -106,7 +108,8 @@ export default function Organizations() {
       !formOrg.name.trim() ||
       !formOrg.email.trim() ||
       !numberAsString.trim()||
-      !formOrg.code.trim()
+      !formOrg.code.trim() ||
+      !formOrg.noofusers.trim()
     ) {
       alert("Please fill out all required fields: Name, Email, and Number");
       return;
@@ -152,6 +155,7 @@ export default function Organizations() {
       reason: "",
       role: "organization",
       code: "",
+      noofusers: "",
     });
   };
 
@@ -239,6 +243,7 @@ export default function Organizations() {
               <th className="px-4 py-3">Name</th>
               <th className="px-4 py-3">Email</th>
               <th className="px-4 py-3">Code</th>
+              <th className="px-4 py-3">Total Number of Users</th>
               <th className="px-4 py-3">Description</th>
               <th className="px-4 py-3">Contact</th>
               <th className="px-4 py-3">County</th>
@@ -251,6 +256,7 @@ export default function Organizations() {
                 <td className="px-4 py-3">{org.name || "N/A"}</td>
                 <td className="px-4 py-3 text-blue-600">{org.email || "N/A"}</td>
                 <td className="px-4 py-3 ">{org.code || "N/A"}</td>
+                <td className="px-4 py-3 ">{org.noofusers || "N/A"}</td>
                 <td className="px-4 py-3 ">{org.description || "N/A"}</td>
                 <td className="px-4 py-3">{org.number || "N/A"}</td>
                 <td className="px-4 py-3">{org.county || "N/A"}</td>
@@ -322,6 +328,17 @@ export default function Organizations() {
               }
               className="w-full px-3 py-2 border rounded mb-3"
             />
+
+            <input
+              type="text"
+              placeholder="Total Number of Users"
+              value={formOrg.noofusers}
+              onChange={(e) =>
+                setFormOrg({ ...formOrg, noofusers: e.target.value })
+              }
+              className="w-full px-3 py-2 border rounded mb-3"
+            />
+
             <input
               type="text"
               placeholder="Contact Number"

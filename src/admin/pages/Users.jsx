@@ -27,7 +27,9 @@ export default function AdminUsers() {
     orgrole: "User",
     contact: "",
     orgname: "",
-    role: "organization",
+    orgcode: "",
+    role: "",
+    description: "",
   });
 
   // Fetch users
@@ -71,9 +73,11 @@ export default function AdminUsers() {
       name: user.name,
       email: user.email,
       orgrole: user.orgrole || "User",
+      description: user.description || "",
       contact: user.contact || "",
       orgname: user.orgname || "",
-      role: "organization",
+      orgcode: user.orgcode || "",
+      role: user.role || "",
     });
     setShowForm(true);
   };
@@ -125,7 +129,10 @@ export default function AdminUsers() {
       u?.name?.toLowerCase().includes(search.toLowerCase()) || false;
     const emailMatch =
       u?.email?.toLowerCase().includes(search.toLowerCase()) || false;
-    return nameMatch || emailMatch;
+    const orgCodeMatch =
+      u?.orgcode?.toLowerCase().includes(search.toLowerCase()) || false;
+    return nameMatch || emailMatch || orgCodeMatch;
+
   });
 
   const auth = getAuth();
@@ -188,7 +195,7 @@ export default function AdminUsers() {
       <div className="mb-6">
         <input
           type="text"
-          placeholder="Search users"
+          placeholder="Search users or organization code"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full px-4 py-2 border rounded-lg shadow-sm focus:ring focus:ring-blue-300"
@@ -204,7 +211,9 @@ export default function AdminUsers() {
               <th className="px-4 py-3">Email</th>
               <th className="px-4 py-3">Contact</th>
               <th className="px-4 py-3">Role</th>
+              <th className="px-4 py-3">Description</th>
               <th className="px-4 py-3">Organization</th>
+              <th className="px-4 py-3">Org Code</th>
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
@@ -227,7 +236,9 @@ export default function AdminUsers() {
                     {user.orgrole || "N/A"}
                   </span>
                 </td>
+                <td className="px-4 py-3">{user.description || "N/A"}</td>
                 <td className="px-4 py-3">{user.orgname || "N/A"}</td>
+                <td className="px-4 py-3">{user.orgcode || "N/A"}</td>
                 <td className="px-4 py-3 text-right flex gap-3 justify-end">
                   {isUserAdmin && (
                   <button
@@ -265,11 +276,12 @@ export default function AdminUsers() {
       {/* User Form (Create + Edit) */}
       {showForm && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md max-w-4xl max-h-[90vh] overflow-y-auto p-8">
             <h2 className="text-lg font-bold mb-4">
               {editMode ? "Edit User" : "Create New User"}
             </h2>
 
+            <label className="block text-sm font-medium text-black">Name</label>
             <input
               type="text"
               placeholder="Name"
@@ -280,6 +292,7 @@ export default function AdminUsers() {
               className="w-full px-3 py-2 border rounded mb-3"
             />
 
+            <label className="block text-sm font-medium text-gray-700">Email</label>
             <input
               type="email"
               placeholder="Email"
@@ -289,7 +302,8 @@ export default function AdminUsers() {
               }
               className="w-full px-3 py-2 border rounded mb-3"
             />
-
+            
+            <label className="block text-sm font-medium text-gray-700">Contact</label>
             <input
               type="number"
               placeholder="Contact"
@@ -300,6 +314,19 @@ export default function AdminUsers() {
               className="w-full px-3 py-2 border rounded mb-3"
             />
 
+            <label className="block text-sm font-medium text-gray-700">Role-Either works as administrator or for an organization</label>
+            <select
+              value={formUser.role}
+              onChange={(e) =>
+                setFormUser({ ...formUser, role: e.target.value })
+              }
+              className="w-full px-3 py-2 border rounded mb-3"
+            >
+              <option value="Administration">Administration</option>
+              <option value="Organization">Organization</option>
+            </select>
+
+            <label className="block text-sm font-medium text-gray-700">Organization   Name </label>
             <input
               type="text"
               placeholder="Organization Name"
@@ -310,6 +337,29 @@ export default function AdminUsers() {
               className="w-full px-3 py-2 border rounded mb-3"
             />
 
+            <label className="block text-sm font-medium text-gray-700">Organization Code</label>
+            <input
+              type="text"
+              placeholder="Organization Code"
+              value={formUser.orgcode}
+              onChange={(e) =>
+                setFormUser({ ...formUser, orgcode: e.target.value })
+              }
+              className="w-full px-3 py-2 border rounded mb-3"
+            />
+
+            <label className="block text-sm font-medium text-gray-700">Description</label>
+            <input
+              type="text"
+              placeholder="Description"
+              value={formUser.description}
+              onChange={(e) =>
+                setFormUser({ ...formUser, description: e.target.value })
+              }
+              className="w-full px-3 py-2 border rounded mb-3"
+            />
+
+            <label className="block text-sm font-medium text-gray-700">Administration/Organization Role</label>
             <select
               value={formUser.orgrole}
               onChange={(e) =>
@@ -320,6 +370,8 @@ export default function AdminUsers() {
               <option value="User">User</option>
               <option value="Moderator">Moderator</option>
               <option value="Administrator">Administrator</option>
+              <option value="Volunteer">Volunteer</option>
+              <option value="Police">Police</option>
             </select>
 
             <div className="flex justify-end gap-3">

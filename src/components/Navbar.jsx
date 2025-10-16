@@ -30,7 +30,7 @@ export default function Navbar() {
           }`}
         >
           <Link to="/" className="hover:text-blue-500">Home</Link>
-          <Link to="/missing-persons" className="hover:text-blue-500">Chat</Link>
+          <Link to="/missing-persons" className="hover:text-blue-500">Reports</Link>
           <Link to="/create-report" className="hover:text-blue-500">Report Missing Person</Link>
           <Link to="/create-danger-report" className="hover:text-blue-500">Report Dangers</Link>
           <Link to="/help-support" className="hover:text-blue-500"> Support</Link>

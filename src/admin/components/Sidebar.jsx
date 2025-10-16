@@ -10,7 +10,6 @@ export default function Sidebar() {
     { name: "Users", icon: <Users size={18} color="blue"/>, path: "/admin/users" },
     { name: "Organizations", icon: <Building size={18} color="blue"/>, path: "/admin/organizations" },
     { name: "Volunteers", icon: <UserPlus size={18} color="blue"/>, path: "/admin/volunteers" },
-    { name: "Statistics", icon: <BarChart2 size={18} color="blue" />, path: "/admin/statistics" },
     { name: "Leads", icon: <Lightbulb size={18} color="blue" />, path: "/admin/leads" },
     { name: "Announcements", icon: <Megaphone size={18} color="blue" />, path: "/admin/announcements" },
   ];

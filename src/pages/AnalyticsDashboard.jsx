@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState,useEffect } from "react";
 import {
-  LineChart,
+LineChart,
   Line,
   BarChart,
   Bar,
@@ -18,6 +18,8 @@ import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useNavigate } from "react-router-dom";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
+
 
 // --- Fix Leaflet default icon issue
 delete L.Icon.Default.prototype._getIconUrl;
@@ -30,112 +32,269 @@ L.Icon.Default.mergeOptions({
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 });
 
+const getReportDate = (report) => {
+  // Check for Firebase Timestamp (from .data())
+  if (report.createdAt && typeof report.createdAt.toDate === 'function') {
+    return report.createdAt.toDate();
+  }
+  // Standard string, ISO, or Date object
+  return new Date(report.createdAt);
+};
+
+const groupReportsByGranularity = (reports, granularity) => {
+    if (!reports || reports.length === 0) return [];
+
+    const groupedReports = new Map();
+
+    for (const report of reports) {
+        const date = getReportDate(report);
+        if (isNaN(date.getTime())) continue; // Skip invalid dates
+
+        let key; // Unique key for the time period
+        let label; // Display label
+
+        switch (granularity) {
+            case 'daily':
+                key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+                label = date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                break;
+            case 'weekly':
+                // Approximation for a week number
+                const weekNum = Math.ceil(date.getDate() / 7);
+                key = `${date.getFullYear()}-${date.getMonth()}-Week${weekNum}`;
+                label = `Week ${weekNum}`;
+                break;
+            case 'monthly':
+                key = `${date.getFullYear()}-${date.getMonth()}`;
+                label = date.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
+                break;
+            default:
+                continue;
+        }
+
+        if (groupedReports.has(key)) {
+            groupedReports.get(key).total += 1;
+        } else {
+            groupedReports.set(key, { label, total: 1 });
+        }
+    }
+
+    // Sort by date key for correct chart order (Approximation)
+    const sorted = Array.from(groupedReports.entries())
+        .map(([key, value]) => ({ key, ...value }))
+        .sort((a, b) => {
+            // Simplified sorting for this example (better to use actual dates/timestamps)
+            return a.key.localeCompare(b.key);
+        });
+        
+    // Return only the data structure needed by the chart
+    return sorted.map(({ label, total }) => ({ label, total }));
+};
+
+
 export default function AnalyticsDashboard() {
   const navigate = useNavigate();
   const [timeGranularity, setTimeGranularity] = useState("weekly");
   const [selectedCategory, setSelectedCategory] = useState("Accidents");
+  const db = getFirestore();
+  const [missingPersonsReports, setMissingPersonsReports] = useState([]);
+  const [dangerReports, setDangerReports] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const overall = {
-    total: 950,
-    missing: 100,
-    danger: 850,
-  };
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const missingSnap = await getDocs(collection(db, "missingPersonsReports"));
+        const dangerSnap = await getDocs(collection(db, "dangerReports"));
+
+        setMissingPersonsReports(
+          missingSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+        );
+        setDangerReports(
+          dangerSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+        );
+
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching reports:", err);
+        setLoading(false);
+      }
+    };
+
+    fetchReports();
+  }, []);
+
+  // Overall stats
+  const overall = useMemo(() => ({
+  missing: missingPersonsReports.length,
+  danger: dangerReports.length,
+  total: missingPersonsReports.length + dangerReports.length,
+  }), [missingPersonsReports, dangerReports]);
+
 
   // Incident frequency (demo)
   const series = useMemo(() => {
-    const weekly = [
-      { label: "Week 1", total: 160 },
-      { label: "Week 2", total: 140 },
-      { label: "Week 3", total: 155 },
-      { label: "Week 4", total: 170 },
-      { label: "Week 5", total: 230 },
-      { label: "Week 6", total: 180 },
-      { label: "Week 7", total: 210 },
+    // 1. Combine all reports into a single array
+    const allReports = [
+        ...missingPersonsReports,
+        ...dangerReports
     ];
-    const daily = new Array(14).fill(null).map((_, i) => ({
-      label: `Day ${i + 1}`,
-      total: 40 + Math.round(10 * Math.sin(i / 2) + Math.random() * 8),
-    }));
-    const monthly = [
-      { label: "Jan", total: 520 },
-      { label: "Feb", total: 480 },
-      { label: "Mar", total: 590 },
-      { label: "Apr", total: 560 },
-      { label: "May", total: 610 },
-      { label: "Jun", total: 650 },
-      { label: "Jul", total: 880 },
-      { label: "Aug", total: 950},
-    ];
-    return { daily, weekly, monthly };
-  }, []);
 
-  // Category breakdown (demo)
-  const categoryMoM = [
-    { category: "Missing Persons", current: 80, previous: 100 },
-    { category: "Accident", current: 210, previous: 140 },
-    { category: "Assault", current: 120, previous: 80 },
-    { category: "Crime", current: 270, previous: 210 },
-    { category: "Natural Disaster", current: 20, previous: 50 },
-    { category: "Violence", current: 250, previous: 300 },
+    // 2. Generate series data by grouping the combined reports
+    const daily = groupReportsByGranularity(allReports, 'daily');
+    const weekly = groupReportsByGranularity(allReports, 'weekly');
+    const monthly = groupReportsByGranularity(allReports, 'monthly');
+
+    // 3. Return the calculated data
+    return { daily, weekly, monthly };
+}, [missingPersonsReports, dangerReports]);
+
+
+  // Category breakdown 
+  const categoryMoM = useMemo(() => {
+  // --- 1. Define Current and Previous Month Boundaries ---
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  let previousMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+  let previousYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+  //  FIX 1: Robust Helper for Date Parsing
+  const getReportDate = (report) => {
+    // Handle Firebase/Firestore Timestamp: needs .toDate()
+    if (report.createdAt && typeof report.createdAt.toDate === 'function') {
+      return report.createdAt.toDate();
+    }
+    // Handle standard string, ISO, or Date object
+    return new Date(report.createdAt);
+  };
+
+  // Function to check if a report belongs to the current month
+  const isCurrentMonth = (report) => {
+    // Safely parse the date using the helper
+    const reportDate = getReportDate(report);
+    // Check for "Invalid Date"
+    if (isNaN(reportDate)) return false; 
+    
+    return reportDate.getMonth() === currentMonth && reportDate.getFullYear() === currentYear;
+  };
+
+  // Function to check if a report belongs to the previous month
+  const isPreviousMonth = (report) => {
+    // Safely parse the date using the helper
+    const reportDate = getReportDate(report);
+    // Check for "Invalid Date"
+    if (isNaN(reportDate)) return false; 
+    
+    return reportDate.getMonth() === previousMonth && reportDate.getFullYear() === previousYear;
+  };
+
+  // --- 2. Filter and Count Danger Reports ---
+
+  const currentDangerCounts = dangerReports
+    .filter(isCurrentMonth)
+    .reduce((acc, report) => {
+      // Ensure the category field is present (handles missing data)
+      const category = report.category || "Uncategorized"; 
+      acc[category] = (acc[category] || 0) + 1;
+      return acc;
+    }, {});
+
+  const previousDangerCounts = dangerReports
+    .filter(isPreviousMonth)
+    .reduce((acc, report) => {
+      const category = report.category || "Uncategorized";
+      acc[category] = (acc[category] || 0) + 1;
+      return acc;
+    }, {});
+
+  // --- 3. Handle Missing Persons Reports ---
+  const currentMissingCount = missingPersonsReports.filter(isCurrentMonth).length;
+  const previousMissingCount = missingPersonsReports.filter(isPreviousMonth).length;
+
+  // --- 4. Combine and Calculate MoM Data ---
+  const allDangerCategories = new Set([
+    ...Object.keys(currentDangerCounts),
+    ...Object.keys(previousDangerCounts),
+  ]);
+
+  const dangerData = Array.from(allDangerCategories).map(category => ({
+    category,
+    current: currentDangerCounts[category] || 0,
+    previous: previousDangerCounts[category] || 0,
+  }));
+  
+  const data = [
+    // Missing Persons Category
+    { 
+      category: "Missing Persons", 
+      current: currentMissingCount, 
+      previous: previousMissingCount 
+    },
+    // All Danger Report Categories
+    ...dangerData,
   ];
 
-  const enrichedCategoryMoM = useMemo(
-    () =>
-      categoryMoM.map((c) => ({
-        ...c,
-        changePct:
-          c.previous === 0
-            ? 100
-            : Math.round(((c.current - c.previous) / c.previous) * 100),
-      })),
-    []
-  );
+  // --- 5. Calculate Change Percentage ---
+  return data.map((c) => {
+    let changePct;
+    if (c.previous === 0) {
+      // New category (or category that was 0)
+      changePct = c.current > 0 ? 100 : 0; 
+    } else {
+      changePct = Math.round(((c.current - c.previous) / c.previous) * 100);
+    }
+    
+    return {
+      ...c,
+      changePct,
+    };
+  });
+}, [dangerReports, missingPersonsReports]); // Dependencies remain the same
 
-  // --- Hotspots by category ---
-  const hotspotsByCategory = {
-    Accidents: [
-      { name: "Nithi Bridge", lat: -0.2036, lng: 37.6656, count: 12 },
-      { name: "Salgaa", lat: -0.2139, lng: 35.8544, count: 18 },
-      { name: "Kibarani Causeway", lat: -4.0435, lng: 39.6682, count: 15 },
-      { name: "Nairobi-Nakuru Highway", lat: -0.3, lng: 36.0, count: 20 },
-      { name: "Kiboswa", lat: -0.0257, lng: 34.7006, count: 10 },
-    ],
-    Assaults: [
-      { name: "Mandera", lat: 3.9373, lng: 41.8569, count: 22 },
-      { name: "Garissa", lat: -0.4569, lng: 39.6583, count: 17 },
-      { name: "Lamu", lat: -2.2716, lng: 40.902, count: 14 },
-      { name: "Eastleigh", lat: -1.2807, lng: 36.854, count: 19 },
-      { name: "Mathare", lat: -1.2667, lng: 36.8667, count: 11 },
-    ],
-    Crime: [
-      { name: "Kibra", lat: -1.3086, lng: 36.7741, count: 25 },
-      { name: "Mishomoroni", lat: -3.9781, lng: 39.6994, count: 18 },
-      { name: "Manyatta", lat: -0.1022, lng: 34.7617, count: 12 },
-      { name: "Bondeni", lat: -0.3031, lng: 36.08, count: 15 },
-      { name: "Mandera/Garissa/Lamu/Wajir", lat: 2.0, lng: 40.0, count: 20 },
-    ],
-    Violence: [
-      { name: "Mandera/Garissa/Lamu", lat: 1.8, lng: 40.2, count: 21 },
-      { name: "West Pokot", lat: 1.5, lng: 35.0, count: 15 },
-      { name: "Turkana", lat: 3.1219, lng: 35.597, count: 13 },
-      { name: "Nairobi", lat: -1.2921, lng: 36.8219, count: 30 },
-      { name: "Mombasa", lat: -4.0435, lng: 39.6682, count: 18 },
-    ],
-    "Natural Disaster": [
-      { name: "Tana River", lat: -0.1, lng: 40.1167, count: 16 },
-      { name: "Nairobi Floods", lat: -1.2921, lng: 36.8219, count: 14 },
-      { name: "Budalang'i", lat: 0.1, lng: 34.0, count: 12 },
-      { name: "Kano Plains", lat: -0.05, lng: 34.95, count: 10 },
-      { name: "West Pokot", lat: 1.5, lng: 35.0, count: 15 },
-    ],
-    "Missing Individuals": [
-      { name: "Nairobi", lat: -1.2921, lng: 36.8219, count: 22 },
-      { name: "Kiambu", lat: -1.1714, lng: 36.8356, count: 12 },
-      { name: "Migori", lat: -1.0634, lng: 34.4736, count: 9 },
-      { name: "Mombasa", lat: -4.0435, lng: 39.6682, count: 15 },
-      { name: "North Eastern Region", lat: 2.0, lng: 40.1167, count: 14 },
-    ],
-  };
+
+// Geospatial trends AND Hotspots by category
+const hotspotsByCategory = useMemo(() => {
+  const categories = {};
+
+  // From danger reports
+  dangerReports.forEach((r) => {
+    const cat = r.category || "Uncategorized";
+    if (!categories[cat]) categories[cat] = [];
+
+    if (r.position) {
+      categories[cat].push({
+        name: r.location || "Unknown",
+        lat: r.position.latitude || r.position._lat,
+        lng: r.position.longitude || r.position._long,
+        count: 1,
+      });
+    }
+  });
+  // Combine multiple reports in same location
+  Object.keys(categories).forEach((cat) => {
+    const grouped = {};
+    categories[cat].forEach((p) => {
+      const key = `${p.lat.toFixed(3)},${p.lng.toFixed(3)}`;
+      if (!grouped[key]) grouped[key] = { ...p, count: 0 };
+      grouped[key].count += 1;
+    });
+    categories[cat] = Object.values(grouped);
+  });
+  // Missing persons category
+  categories["Missing Persons"] = missingPersonsReports
+    .filter((r) => r.position)
+    .map((r) => ({
+      name: r.location || r.county || "Unknown",
+      lat: r.position.latitude || r.position._lat,
+      lng: r.position.longitude || r.position._long,
+      count: 1,
+    }));
+
+  return categories;
+}, [dangerReports, missingPersonsReports]);
+
 
   const colorsByCategory = {
     Accidents: "#ef4444",
@@ -183,6 +342,14 @@ export default function AnalyticsDashboard() {
 
   // Label function to show percentages on slices
   const percentLabel = ({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`;
+
+  if (loading) {
+  return (
+    <div className="flex justify-center items-center h-screen">
+      <p>Loading analytics...</p>
+    </div>
+  );
+}
 
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-8">
@@ -256,7 +423,7 @@ export default function AnalyticsDashboard() {
         <h2 className="text-xl font-semibold">Category Breakdown</h2>
         <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex flex-wrap gap-4 mb-4">
-            {enrichedCategoryMoM.map((c) => (
+            {categoryMoM.map((c) => (
               <div key={c.category} className="min-w-[180px]">
                 <div className="text-xs text-slate-500">MoM Change</div>
                 <div
@@ -274,7 +441,7 @@ export default function AnalyticsDashboard() {
 
           <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={enrichedCategoryMoM}>
+              <BarChart data={categoryMoM}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="category" tick={{ fontSize: 12 }} />
                 <YAxis />

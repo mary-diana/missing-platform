@@ -9,6 +9,7 @@ export default function Signup() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    nationalid:"",
     password: "",
     confirmPassword: "",
     county: "",
@@ -62,6 +63,7 @@ export default function Signup() {
         await setDoc(doc(db, "users", user.uid), {
           name: formData.name,
           email: formData.email,
+          nationalid:formData.nationalid,
           role,
           createdAt: new Date(),
         });
@@ -122,6 +124,15 @@ export default function Signup() {
             name="email"
             placeholder="Email Address"
             value={formData.email}
+            onChange={handleChange}
+            className="w-full border rounded px-3 py-2"
+            required
+          />
+          <input
+            type="number"
+            name="nationalid"
+            placeholder="National ID"
+            value={formData.nationalid}
             onChange={handleChange}
             className="w-full border rounded px-3 py-2"
             required
