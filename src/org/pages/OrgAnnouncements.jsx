@@ -157,31 +157,48 @@ export default function OrgAnnouncements() {
       ) : (
         <ul className="space-y-4">
           {announcements.map((a) => (
-            <li
-              key={a.id}
-              className="p-4 border rounded-lg shadow flex justify-between items-start"
-            >
-              <div>
-                <h3 className="font-bold">{a.title}</h3>
-                <p className="text-gray-700">{a.content}</p>
-                <p className="text-sm text-gray-600 mt-1">
-                  Posted by <span className="font-semibold">{a.authorName}</span>{" "}
-                  ({a.authorRole})
-                </p>
-                {a.createdAt?.toDate && (
-                  <p className="text-xs text-gray-500">
-                    {a.createdAt.toDate().toLocaleString()}
-                  </p>
-                )}
-              </div>
-              <button
-                onClick={() => handleDelete(a.id)}
-                className="ml-4 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
-              >
-                Delete
-              </button>
-            </li>
-          ))}
+  <li
+    key={a.id}
+    className="p-4 border rounded-lg shadow flex justify-between items-start select-none"
+    onMouseDown={(e) => {
+      e.preventDefault();
+      const timeout = setTimeout(() => {
+        handleDelete(a.id);
+      }, 1000); // 1 second hold triggers delete
+      e.target.dataset.timeout = timeout;
+    }}
+    onMouseUp={(e) => {
+      clearTimeout(e.target.dataset.timeout);
+    }}
+    onMouseLeave={(e) => {
+      clearTimeout(e.target.dataset.timeout);
+    }}
+    onTouchStart={(e) => {
+      const timeout = setTimeout(() => {
+        handleDelete(a.id);
+      }, 1000);
+      e.target.dataset.timeout = timeout;
+    }}
+    onTouchEnd={(e) => {
+      clearTimeout(e.target.dataset.timeout);
+    }}
+  >
+    <div>
+      <h3 className="font-bold">{a.title}</h3>
+      <p className="text-gray-700">{a.content}</p>
+      <p className="text-sm text-gray-600 mt-1">
+        Posted by <span className="font-semibold">{a.authorName}</span>{" "}
+        ({a.authorRole})
+      </p>
+      {a.createdAt?.toDate && (
+        <p className="text-xs text-gray-500">
+          {a.createdAt.toDate().toLocaleString()}
+        </p>
+      )}
+    </div>
+  </li>
+))}
+
         </ul>
       )}
     </div>

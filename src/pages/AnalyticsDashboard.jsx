@@ -298,11 +298,13 @@ const hotspotsByCategory = useMemo(() => {
 
   const colorsByCategory = {
     Accidents: "#ef4444",
-    Assaults: "#f97316",
-    Crime: "#2563eb",
-    Violence: "#7c3aed",
-    "Natural Disaster": "#059669",
-    "Missing Individuals": "#eab308",
+    Assaults: "#ef4444",
+    Crime: "#ef4444",
+    Violence: "#ef4444",
+    "Natural Disaster": "#ef4444",
+    "Missing Persons": "#ef4444",
+    Other: "#ef4444",
+    Assault: "#ef4444",
   };
 
   const currentHotspots = hotspotsByCategory[selectedCategory] || [];

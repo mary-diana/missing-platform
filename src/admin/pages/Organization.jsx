@@ -294,113 +294,147 @@ export default function Organizations() {
         </table>
       </div>
 
-      {/* Organization Form (Create + Edit) */}
-      {showForm && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-            <h2 className="text-lg font-bold mb-4">
-              {editMode ? "Edit Organization" : "Add New Organization"}
-            </h2>
-            <input
-              type="text"
-              placeholder="Name"
-              value={formOrg.name}
-              onChange={(e) =>
-                setFormOrg({ ...formOrg, name: e.target.value })
-              }
-              className="w-full px-3 py-2 border rounded mb-3"
-            />
-            <input
-              type="email"
-              placeholder="Email"
-              value={formOrg.email}
-              onChange={(e) =>
-                setFormOrg({ ...formOrg, email: e.target.value })
-              }
-              className="w-full px-3 py-2 border rounded mb-3"
-            />
-            <input
-              type="text"
-              placeholder="Code"
-              value={formOrg.code}
-              onChange={(e) =>
-                setFormOrg({ ...formOrg, code: e.target.value })
-              }
-              className="w-full px-3 py-2 border rounded mb-3"
-            />
+     {/* Organization Form (Create + Edit) */}
+    {showForm && (
+      <div className="fixed inset-0 bg-gray-800 bg-opacity-60 flex items-center justify-center z-50">
+        <div className="relative bg-white rounded-xl shadow-2xl w-11/12 md:w-3/5 lg:w-2/5 max-h-[90vh] overflow-y-auto p-8 transform transition-all">
+          
+          {/* Close Button */}
+          <button
+            onClick={closeForm}
+            className="absolute top-3 right-4 text-gray-400 hover:text-gray-600 text-2xl"
+            aria-label="Close"
+          >
+            &times;
+          </button>
 
-            <input
-              type="text"
-              placeholder="Total Number of Users"
-              value={formOrg.noofusers}
-              onChange={(e) =>
-                setFormOrg({ ...formOrg, noofusers: e.target.value })
-              }
-              className="w-full px-3 py-2 border rounded mb-3"
-            />
+          {/* Header */}
+          <h2 className="text-2xl font-semibold mb-6 text-gray-800 border-b pb-2">
+            {editMode ? "Edit Organization" : "Add New Organization"}
+          </h2>
 
-            <input
-              type="text"
-              placeholder="Contact Number"
-              value={formOrg.number}
-              onChange={(e) =>
-                setFormOrg({ ...formOrg, number: e.target.value })
-              }
-              className="w-full px-3 py-2 border rounded mb-3"
-            />
-            <input
-              type="text"
-              placeholder="County"
-              value={formOrg.county}
-              onChange={(e) =>
-                setFormOrg({ ...formOrg, county: e.target.value })
-              }
-              className="w-full px-3 py-2 border rounded mb-3"
-            />
-            <input
-              type="text"
-              placeholder="Location"
-              value={formOrg.location}
-              onChange={(e) =>
-                setFormOrg({ ...formOrg, location: e.target.value })
-              }
-              className="w-full px-3 py-2 border rounded mb-3"
-            />
-            <textarea
-              placeholder="Description"
-              value={formOrg.description}
-              onChange={(e) =>
-                setFormOrg({ ...formOrg, description: e.target.value })
-              }
-              className="w-full px-3 py-2 border rounded mb-3"
-              rows="3"
-            ></textarea>
-            <textarea
-              placeholder="Reason for inclusion"
-              value={formOrg.reason}
-              onChange={(e) =>
-                setFormOrg({ ...formOrg, reason: e.target.value })
-              }
-              className="w-full px-3 py-2 border rounded mb-3"
-              rows="3"
-            ></textarea>
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={closeForm}
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={editMode ? handleUpdateOrg : handleAddOrg}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-              >
-                {editMode ? "Update" : "Save"}
-              </button>
+          {/* Form Fields */}
+          <div className="space-y-4 text-sm text-gray-700">
+
+            <div>
+              <label className="block font-medium mb-1">Organization Name</label>
+              <input
+                type="text"
+                placeholder="Name"
+                value={formOrg.name}
+                onChange={(e) => setFormOrg({ ...formOrg, name: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium mb-1">Organization Email</label>
+              <input
+                type="email"
+                placeholder="Email"
+                value={formOrg.email}
+                onChange={(e) => setFormOrg({ ...formOrg, email: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium mb-1">Organization Code</label>
+              <input
+                type="text"
+                placeholder="Code"
+                value={formOrg.code}
+                onChange={(e) => setFormOrg({ ...formOrg, code: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium mb-1">Total Number of Users</label>
+              <input
+                type="number"
+                placeholder="Total Number of Users"
+                value={formOrg.noofusers}
+                onChange={(e) => setFormOrg({ ...formOrg, noofusers: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium mb-1">Contact Number</label>
+              <input
+                type="text"
+                placeholder="Contact Number"
+                value={formOrg.number}
+                onChange={(e) => setFormOrg({ ...formOrg, number: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium mb-1">County</label>
+              <input
+                type="text"
+                placeholder="County"
+                value={formOrg.county}
+                onChange={(e) => setFormOrg({ ...formOrg, county: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium mb-1">Location</label>
+              <input
+                type="text"
+                placeholder="Location"
+                value={formOrg.location}
+                onChange={(e) => setFormOrg({ ...formOrg, location: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium mb-1">Description</label>
+              <textarea
+                placeholder="Description"
+                value={formOrg.description}
+                onChange={(e) => setFormOrg({ ...formOrg, description: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                rows="3"
+              ></textarea>
+            </div>
+
+            <div>
+              <label className="block font-medium mb-1">Reason for Inclusion</label>
+              <textarea
+                placeholder="Reason for inclusion"
+                value={formOrg.reason}
+                onChange={(e) => setFormOrg({ ...formOrg, reason: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                rows="3"
+              ></textarea>
             </div>
           </div>
+
+          {/* Buttons */}
+          <div className="flex justify-end gap-3 mt-6 border-t pt-4">
+            <button
+              onClick={closeForm}
+              className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 transition"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={editMode ? handleUpdateOrg : handleAddOrg}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            >
+              {editMode ? "Update" : "Save"}
+            </button>
+          </div>
         </div>
-      )}
+      </div>
+    )}
+
     </div>
   );
 }

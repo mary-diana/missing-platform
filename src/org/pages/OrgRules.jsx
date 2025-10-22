@@ -1,18 +1,21 @@
+// src/pages/OrgRules.jsx
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeftCircle } from "lucide-react";
 import downloadImage from "../../assets/download.jfif";
 
 export default function OrgRules() {
-  // Static org info
-  const [orgInfo] = useState({
-    name: "Find Them",
-    description:
-      "Find Them is a centralized platform that brings together citizens, families and organizations to raise awareness about missing people and real-time dangers in communities. Our goal is to unify reporting and improve response through transparency and accessibility.",
-  });
+  const navigate = useNavigate();
 
-  // Optional: simple accordion toggle
   const [openIndex, setOpenIndex] = useState(null);
   const toggleAccordion = (index) => {
     setOpenIndex(openIndex === index ? null : index);
+  };
+
+  const orgInfo = {
+    name: "Find Them",
+    description:
+      "These rules and regulations govern the conduct of all organization members. Failure to comply may lead to suspension or legal action. Always act ethically and responsibly.",
   };
 
   const adminRules = [
@@ -31,20 +34,20 @@ export default function OrgRules() {
         "Protect all personal data and do not share it with unauthorized parties.",
         "Follow Kenya’s Data Protection Act (2019).",
         "Anonymize data before public analytics or reports.",
-        "Secure all admin accounts with strong passwords",
+        "Secure all admin accounts with strong passwords.",
         "Report any data breaches immediately to system administrators.",
       ],
     },
     {
       title: "3. Report Verification and Moderation",
       rules: [
-        "Flag or remove false, duplicate or offensive reports.",
+        "Flag or remove false, duplicate, or offensive reports.",
         "Keep resolved reports archived but not deleted.",
         "Communicate with reporters for additional information if needed.",
         "Do not share unverified reports publicly.",
-        "Only moderators can approve,verify,reject and resolve reports for public viewing.",  
-        "Users in the can only view and create reports but cannot verify,approve,reject or resolve them.",
-        "Urgent reports (abductions,assaults and deaths) must be prioritized for review and action.",
+        "Only moderators can approve, verify, reject, and resolve reports for public viewing.",
+        "Users can only view and create reports but cannot verify, approve, reject, or resolve them.",
+        "Urgent reports (abductions, assaults, and deaths) must be prioritized for review and action.",
       ],
     },
     {
@@ -60,7 +63,7 @@ export default function OrgRules() {
       title: "5. Communication and Content Rules",
       rules: [
         "Keep all public communication professional and factual.",
-        "Avoid political, discriminatory or defamatory language.",
+        "Avoid political, discriminatory, or defamatory language.",
         "Do not engage in arguments with users in public comments.",
       ],
     },
@@ -77,7 +80,7 @@ export default function OrgRules() {
       title: "7. Legal and Ethical Conduct",
       rules: [
         "Comply with Kenya’s laws including the Data Protection Act and Cybercrime Act.",
-        "Do not discriminate by gender, ethnicity or religion.",
+        "Do not discriminate by gender, ethnicity, or religion.",
         "Cooperate with law enforcement under due legal process.",
         "Violations of any rule may lead to suspension or legal action.",
       ],
@@ -85,10 +88,10 @@ export default function OrgRules() {
   ];
 
   return (
-    <div className="min-h-screen font-sans bg-gray-100">
-      {/* Landing Section */}
+    <div className="min-h-screen font-sans bg-gray-50 flex flex-col">
+      {/* Header Section */}
       <div
-        className="relative h-[70vh] flex items-center justify-center text-center text-white"
+        className="relative h-[60vh] flex flex-col justify-center text-center text-white"
         style={{
           backgroundImage: `url(${downloadImage})`,
           backgroundSize: "cover",
@@ -96,32 +99,43 @@ export default function OrgRules() {
         }}
       >
         {/* Overlay */}
-        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 to-black/60"></div>
 
-        {/* Content */}
-        <div className="relative z-10 max-w-3xl px-6">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-yellow-300">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate("/org/dashboard")}
+          className="absolute top-6 left-6 flex items-center gap-2 text-white bg-black/40 hover:bg-black/60 px-4 py-2 rounded-full transition"
+        >
+          <ArrowLeftCircle size={20} />
+          <span className="text-sm font-medium">Back</span>
+        </button>
+
+        {/* Title and Description */}
+        <div className="relative z-10 px-6">
+          <h1 className="text-4xl md:text-5xl font-bold text-yellow-300 mb-3">
             {orgInfo.name}
           </h1>
-          <p className="mt-2 text-sm md:text-base">{orgInfo.description}</p>
+          <p className="max-w-3xl mx-auto text-gray-200 text-sm md:text-base leading-relaxed">
+            {orgInfo.description}
+          </p>
         </div>
       </div>
 
-      {/* Admin Rules Section */}
-      <div className="max-w-5xl mx-auto py-12 px-6">
+      {/* Rules Section */}
+      <div className="max-w-5xl mx-auto w-full py-12 px-6">
         <h2 className="text-3xl font-semibold text-gray-800 mb-8 text-center">
-          🛡️ Admin Rules and Guidelines
+          🛡️ Organization Rules & Guidelines
         </h2>
 
         <div className="space-y-4">
           {adminRules.map((section, index) => (
             <div
               key={index}
-              className="bg-white shadow rounded-lg border border-gray-200"
+              className="bg-white shadow-md rounded-xl border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg"
             >
               <button
                 onClick={() => toggleAccordion(index)}
-                className="w-full text-left px-6 py-4 flex justify-between items-center focus:outline-none"
+                className="w-full text-left px-6 py-4 flex justify-between items-center hover:bg-gray-50 transition"
               >
                 <span className="font-medium text-lg text-gray-800">
                   {section.title}
@@ -131,27 +145,29 @@ export default function OrgRules() {
                 </span>
               </button>
 
-              {openIndex === index && (
+              <div
+                className={`transition-all duration-300 ${
+                  openIndex === index
+                    ? "max-h-screen opacity-100"
+                    : "max-h-0 opacity-0"
+                } overflow-hidden`}
+              >
                 <ul className="px-8 pb-6 list-disc space-y-2 text-gray-700 text-sm md:text-base">
                   {section.rules.map((rule, i) => (
                     <li key={i}>{rule}</li>
                   ))}
                 </ul>
-              )}
+              </div>
             </div>
           ))}
         </div>
 
-        <div className="text-center mt-10">
-          <p className="text-sm text-gray-600">
-            Last Updated: October 2025 | Admins must review these rules
-            regularly and confirm compliance before performing sensitive
-            actions.
+        <div className="text-center mt-12">
+          <p className="text-sm text-gray-600 italic">
+            Last Updated: October 2025 — Admins must review and confirm compliance before performing sensitive actions.
           </p>
-          
         </div>
       </div>
     </div>
   );
 }
-

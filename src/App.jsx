@@ -27,6 +27,8 @@ import Announcements from "./admin/pages/Announcements";
 import Organizations from "./admin/pages/Organization";
 import AdminVolunteer from "./admin/pages/AdminVolunteer";
 import LeadsManagement from "./admin/pages/AdminLeads";
+import RequestVolunteerPage from "./admin/pages/RequestVolunteerPage";
+import AssignReportPage from "./admin/pages/AssignReportPage";
 
 //Organizations
 import OrgDashboard from "./org/pages/OrgDashboard";
@@ -35,6 +37,7 @@ import OrgLeads from "./org/pages/OrgLeads";
 import OrgAnnouncements from "./org/pages/OrgAnnouncements";
 import OrgReports from "./org/pages/OrgReports";
 import OrgVolunteerManagement from "./org/pages/OrgVolunteer";
+import OrgRules from "./org/pages/OrgRules";
 
 // Auth Context & Protected Route
 import { AuthProvider } from "./context/AuthContext";
@@ -88,6 +91,8 @@ function App() {
           <Route path="/admin/organizations" element={<AdminLayout><Organizations /></AdminLayout>} />
           <Route path="/admin/volunteers" element={<AdminLayout><AdminVolunteer /></AdminLayout>} />
           <Route path="/admin/leads" element={<AdminLayout><LeadsManagement /></AdminLayout>} />
+          <Route path="/admin/request-volunteer/:docId" element={<AdminLayout><RequestVolunteerPage /></AdminLayout>} />
+          <Route path="/admin/assign-report/:docId" element={<AdminLayout><AssignReportPage /></AdminLayout>} />
 
           {/* Organization Pages */}
           <Route path="/org/dashboard" element={<OrgLayout><OrgDashboard /></OrgLayout>} />
@@ -95,6 +100,7 @@ function App() {
           <Route path="/org/announcements" element={<OrgLayout><OrgAnnouncements /></OrgLayout>} />
           <Route path="/org/reports" element={<OrgLayout><OrgReports /></OrgLayout>} />
           <Route path="/org/volunteers" element={<OrgLayout><OrgVolunteerManagement /></OrgLayout>} />
+          <Route path="/org/rules" element={<OrgLayout><OrgRules /></OrgLayout>} />
         </Routes>
       </Router>
     </AuthProvider>

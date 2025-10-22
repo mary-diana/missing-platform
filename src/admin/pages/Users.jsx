@@ -274,123 +274,151 @@ export default function AdminUsers() {
       </div>
 
       {/* User Form (Create + Edit) */}
-      {showForm && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md max-w-4xl max-h-[90vh] overflow-y-auto p-8">
-            <h2 className="text-lg font-bold mb-4">
-              {editMode ? "Edit User" : "Create New User"}
-            </h2>
+{showForm && (
+  <div className="fixed inset-0 bg-gray-800 bg-opacity-70 flex items-center justify-center z-50 overflow-y-auto">
+    <div className="relative w-11/12 md:w-4/5 lg:w-2/3 xl:w-1/2 bg-white rounded-xl shadow-2xl p-6 my-10 max-h-[90vh] overflow-y-auto">
+      
+      {/* Close Button */}
+      <button
+        onClick={closeForm}
+        className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
+        aria-label="Close"
+      >
+        &times;
+      </button>
 
-            <label className="block text-sm font-medium text-black">Name</label>
-            <input
-              type="text"
-              placeholder="Name"
-              value={formUser.name}
-              onChange={(e) =>
-                setFormUser({ ...formUser, name: e.target.value })
-              }
-              className="w-full px-3 py-2 border rounded mb-3"
-            />
+      {/* Header */}
+      <h2 className="text-2xl font-semibold mb-6 text-gray-800 border-b pb-2">
+        {editMode ? "Edit User" : "Create New User"}
+      </h2>
 
-            <label className="block text-sm font-medium text-gray-700">Email</label>
-            <input
-              type="email"
-              placeholder="Email"
-              value={formUser.email}
-              onChange={(e) =>
-                setFormUser({ ...formUser, email: e.target.value })
-              }
-              className="w-full px-3 py-2 border rounded mb-3"
-            />
-            
-            <label className="block text-sm font-medium text-gray-700">Contact</label>
-            <input
-              type="number"
-              placeholder="Contact"
-              value={formUser.contact}
-              onChange={(e) =>
-                setFormUser({ ...formUser, contact: e.target.value })
-              }
-              className="w-full px-3 py-2 border rounded mb-3"
-            />
-
-            <label className="block text-sm font-medium text-gray-700">Role-Either works as administrator or for an organization</label>
-            <select
-              value={formUser.role}
-              onChange={(e) =>
-                setFormUser({ ...formUser, role: e.target.value })
-              }
-              className="w-full px-3 py-2 border rounded mb-3"
-            >
-              <option value="Administration">Administration</option>
-              <option value="Organization">Organization</option>
-            </select>
-
-            <label className="block text-sm font-medium text-gray-700">Organization   Name </label>
-            <input
-              type="text"
-              placeholder="Organization Name"
-              value={formUser.orgname}
-              onChange={(e) =>
-                setFormUser({ ...formUser, orgname: e.target.value })
-              }
-              className="w-full px-3 py-2 border rounded mb-3"
-            />
-
-            <label className="block text-sm font-medium text-gray-700">Organization Code</label>
-            <input
-              type="text"
-              placeholder="Organization Code"
-              value={formUser.orgcode}
-              onChange={(e) =>
-                setFormUser({ ...formUser, orgcode: e.target.value })
-              }
-              className="w-full px-3 py-2 border rounded mb-3"
-            />
-
-            <label className="block text-sm font-medium text-gray-700">Description</label>
-            <input
-              type="text"
-              placeholder="Description"
-              value={formUser.description}
-              onChange={(e) =>
-                setFormUser({ ...formUser, description: e.target.value })
-              }
-              className="w-full px-3 py-2 border rounded mb-3"
-            />
-
-            <label className="block text-sm font-medium text-gray-700">Administration/Organization Role</label>
-            <select
-              value={formUser.orgrole}
-              onChange={(e) =>
-                setFormUser({ ...formUser, orgrole: e.target.value })
-              }
-              className="w-full px-3 py-2 border rounded mb-3"
-            >
-              <option value="User">User</option>
-              <option value="Moderator">Moderator</option>
-              <option value="Administrator">Administrator</option>
-              <option value="Volunteer">Volunteer</option>
-              <option value="Police">Police</option>
-            </select>
-
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={closeForm}
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={editMode ? handleUpdateUser : handleAddUser}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-              >
-                {editMode ? "Update" : "Save"}
-              </button>
-            </div>
-          </div>
+      {/* Form */}
+      <div className="grid md:grid-cols-2 gap-4 text-gray-700 text-sm mb-6">
+        {/* Name */}
+        <div>
+          <label className="block font-medium text-gray-800 mb-1">Name</label>
+          <input
+            type="text"
+            placeholder="Enter name"
+            value={formUser.name}
+            onChange={(e) => setFormUser({ ...formUser, name: e.target.value })}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          />
         </div>
-      )}
+
+        {/* Email */}
+        <div>
+          <label className="block font-medium text-gray-800 mb-1">Email</label>
+          <input
+            type="email"
+            placeholder="Enter email"
+            value={formUser.email}
+            onChange={(e) => setFormUser({ ...formUser, email: e.target.value })}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          />
+        </div>
+
+        {/* Contact */}
+        <div>
+          <label className="block font-medium text-gray-800 mb-1">Contact</label>
+          <input
+            type="number"
+            placeholder="Enter contact number"
+            value={formUser.contact}
+            onChange={(e) => setFormUser({ ...formUser, contact: e.target.value })}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          />
+        </div>
+
+        {/* Role */}
+        <div>
+          <label className="block font-medium text-gray-800 mb-1">
+            Role <span className="text-gray-500 text-xs">(Administrator / Organization)</span>
+          </label>
+          <select
+            value={formUser.role}
+            onChange={(e) => setFormUser({ ...formUser, role: e.target.value })}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          >
+            <option value="Administration">Administration</option>
+            <option value="Organization">Organization</option>
+          </select>
+        </div>
+
+        {/* Organization Name */}
+        <div>
+          <label className="block font-medium text-gray-800 mb-1">Organization Name</label>
+          <input
+            type="text"
+            placeholder="Enter organization name"
+            value={formUser.orgname}
+            onChange={(e) => setFormUser({ ...formUser, orgname: e.target.value })}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          />
+        </div>
+
+        {/* Organization Code */}
+        <div>
+          <label className="block font-medium text-gray-800 mb-1">Organization Code</label>
+          <input
+            type="text"
+            placeholder="Enter organization code"
+            value={formUser.orgcode}
+            onChange={(e) => setFormUser({ ...formUser, orgcode: e.target.value })}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          />
+        </div>
+
+        {/* Description (Full width) */}
+        <div className="md:col-span-2">
+          <label className="block font-medium text-gray-800 mb-1">Description</label>
+          <textarea
+            placeholder="Enter description"
+            value={formUser.description}
+            onChange={(e) => setFormUser({ ...formUser, description: e.target.value })}
+            rows={3}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          />
+        </div>
+
+        {/* Organization Role */}
+        <div className="md:col-span-2">
+          <label className="block font-medium text-gray-800 mb-1">
+            Administration / Organization Role
+          </label>
+          <select
+            value={formUser.orgrole}
+            onChange={(e) => setFormUser({ ...formUser, orgrole: e.target.value })}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          >
+            <option value="User">User</option>
+            <option value="Moderator">Moderator</option>
+            <option value="Administrator">Administrator</option>
+            <option value="Volunteer">Volunteer</option>
+            <option value="Police">Police</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex justify-end gap-3 border-t pt-4">
+        <button
+          onClick={closeForm}
+          className="px-4 py-2 bg-gray-300 rounded-lg text-sm font-medium hover:bg-gray-400 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={editMode ? handleUpdateUser : handleAddUser}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+        >
+          {editMode ? "Update" : "Save"}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }

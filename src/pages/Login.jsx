@@ -26,7 +26,7 @@ export default function Login() {
     let isNationalIdLogin = false;
 
     try {
-      // ✅ Step 1: Check if the user logged in with National ID
+      //  Step 1: Check if the user logged in with National ID
       if (!loginIdentifier.includes("@")) {
         isNationalIdLogin = true;
         const nationalIdAsNumber = Number(loginIdentifier);
@@ -52,11 +52,11 @@ export default function Login() {
         }
       }
 
-      // ✅ Step 2: Firebase authentication
+      //  Step 2: Firebase authentication
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // ✅ Step 3: Handle login type
+      //  Step 3: Handle login type
       if (selectedType === "organization") {
         const q = query(collection(db, "adminusers"), where("email", "==", user.email));
         const querySnapshot = await getDocs(q);
@@ -66,11 +66,11 @@ export default function Login() {
 
           if (data.role === "Organization") {
             localStorage.setItem("role", "organization");
-            navigate("/org/dashboard"); // ✅ Correct route for organizations
+            navigate("/org/dashboard"); //  Correct route for organizations
             return;
           } else if (data.role === "Administration") {
             localStorage.setItem("role", "admin");
-            navigate("/admin/dashboard"); // ✅ Correct route for administrators
+            navigate("/admin/dashboard"); // Correct route for administrators
             return;
           }
         }
@@ -78,7 +78,7 @@ export default function Login() {
         alert("Access Denied. Organization or Admin account not found or role is incorrect.");
       }
 
-      // ✅ Citizen login
+      //  Citizen login
       else if (selectedType === "citizen") {
         const citizenDocRef = doc(db, "users", user.uid);
         const citizenDocSnap = await getDoc(citizenDocRef);

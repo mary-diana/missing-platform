@@ -36,7 +36,7 @@ export default function AdminVolunteerManagement() {
         const adminsRef = collection(db, "adminusers"); 
         const adminSnapshot = await getDocs(adminsRef);
         const allowedEmails = adminSnapshot.docs
-        .filter(doc => ["Administrator","User","Volunteer"].includes(doc.data().orgrole))
+        .filter(doc => ["Administrator","Volunteer"].includes(doc.data().orgrole))
         .map(doc => doc.data().email);
         setIsUserAdmin(allowedEmails.includes(userEmail));
       } catch (error) {
@@ -318,7 +318,7 @@ export default function AdminVolunteerManagement() {
 
             <hr className="mb-4" />
 
-            {/* 🛑 HIDE/VIEW TOGGLE BUTTON 🛑 */}
+            {/* HIDE/VIEW TOGGLE BUTTON  */}
             {isUserAdmin && (
                 <div className="flex justify-end mb-4">
                     <button
@@ -330,7 +330,7 @@ export default function AdminVolunteerManagement() {
                 </div>
             )}
 
-            {/* 🛑 RESTRICTED ASSIGNMENT DETAILS BLOCK 🛑 */}
+            {/* RESTRICTED ASSIGNMENT DETAILS BLOCK  */}
             {isUserAdmin && showRestrictedDetails && (
                 <div className="p-4 border border-blue-200 bg-blue-50 rounded-lg">
                     <h3 className="text-lg font-semibold mb-3">Task Management</h3>
