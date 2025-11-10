@@ -667,7 +667,7 @@ export default function AccountPage() {
           will appear here automatically.
         </p>
         
-        <p className="text-sm text-yellow-400">
+        <p className="text-sm text-black">
           Reminder: If your posts are rejected, we request to delete it immediately. Failure to
           comply may result to deletion of the post without prior notice or permission.
         </p>

@@ -1,14 +1,15 @@
 // src/admin/components/Sidebar.jsx
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Home,
   FileText,
   Megaphone,
   Lightbulb,
+  LogOut,
 } from "lucide-react";
 import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { getAuth, signOut } from "firebase/auth";
 import { db } from "../../firebase";
 
 export default function Sidebar() {
@@ -16,6 +17,7 @@ export default function Sidebar() {
   const [loading, setLoading] = useState(true);
   const auth = getAuth();
   const firestore = getFirestore();
+  const navigate = useNavigate();
 
   // 🔹 Fetch logged-in user's role from Firestore (using email since you use auto IDs)
   useEffect(() => {
@@ -54,7 +56,7 @@ export default function Sidebar() {
   const canViewLeads =
     userRole === "Administrator" ||
     userRole === "Moderator" ||
-    userRole ==="User" ||
+    userRole === "User" ||
     userRole === "Police";
 
   // Define menu items (conditionally include Leads)
@@ -67,28 +69,50 @@ export default function Sidebar() {
     { name: "Announcements", icon: <Megaphone size={18} color="blue" />, path: "/org/announcements" },
   ];
 
+  // 🔹 Handle Logout
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate("/login");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
   if (loading)
     return (
-      <aside className="w-64 bg-white shadow-md flex-shrink-0">
+      <aside className="w-64 bg-white shadow-md flex-shrink-0 sticky top-0 h-screen">
         <div className="p-4 font-bold text-lg border-b">Find Them</div>
         <div className="p-4 text-gray-500">Loading...</div>
       </aside>
     );
 
   return (
-    <aside className="w-64 bg-white shadow-md flex-shrink-0">
-      <div className="p-4 font-bold text-lg border-b">Find Them</div>
-      <nav className="p-4 space-y-2">
-        {menuItems.map((item) => (
-          <Link
-            key={item.name}
-            to={item.path}
-            className="flex items-center gap-2 px-4 py-2 rounded hover:bg-blue-100"
-          >
-            {item.icon} {item.name}
-          </Link>
-        ))}
-      </nav>
+    <aside className="w-64 bg-white shadow-md flex-shrink-0 sticky top-0 h-screen flex flex-col justify-between">
+      <div>
+        <div className="p-4 font-bold text-lg border-b">Find Them</div>
+        <nav className="p-4 space-y-2">
+          {menuItems.map((item) => (
+            <Link
+              key={item.name}
+              to={item.path}
+              className="flex items-center gap-2 px-4 py-2 rounded hover:bg-blue-100"
+            >
+              {item.icon} {item.name}
+            </Link>
+          ))}
+        </nav>
+      </div>
+
+      {/* 🔹 Logout Button */}
+      <div className="p-4 border-t">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-2 px-4 py-2 w-full rounded text-red-600 hover:bg-red-100"
+        >
+          <LogOut size={18} /> Logout
+        </button>
+      </div>
     </aside>
   );
 }

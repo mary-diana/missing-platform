@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useLocation,useParams, useNavigate } from "react-router-dom";
 import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 
 export default function RequestVolunteerPage() {
   const { docId } = useParams(); // Get docId from URL
   const navigate = useNavigate(); // For redirection
+  const location = useLocation();
   const db = getFirestore();
 
   const [report, setReport] = useState(null);
@@ -79,7 +80,10 @@ export default function RequestVolunteerPage() {
       });
 
       alert("Assigned Volunteer updated successfully!");
-      navigate('/admin/reports'); // Go back to the reports list or specific report view
+       const redirectPath = location.pathname.startsWith('/admin')
+        ? '/admin/reports' // Redirect to admin reports page
+        : '/org/reports'; // Assuming /org/reports is the correct path for the org account
+      navigate(redirectPath);
     } catch (e) {
       console.error("Error updating assigned volunteer:", e);
       alert("Failed to update assigned volunteer: " + e.message);

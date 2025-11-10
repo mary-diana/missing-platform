@@ -79,15 +79,19 @@ const groupReportsByGranularity = (reports, granularity) => {
         }
     }
 
-    // Sort by date key for correct chart order (Approximation)
+    // Convert Map to sorted array
+    // ✅ Properly sort by real Date instead of string
     const sorted = Array.from(groupedReports.entries())
-        .map(([key, value]) => ({ key, ...value }))
-        .sort((a, b) => {
-            // Simplified sorting for this example (better to use actual dates/timestamps)
-            return a.key.localeCompare(b.key);
-        });
-        
-    // Return only the data structure needed by the chart
+      .map(([key, value]) => {
+        const parts = key.split("-");
+        const year = parseInt(parts[0]);
+        const month = parseInt(parts[1]);
+        const day = parts[2] && !parts[2].includes("Week") ? parseInt(parts[2]) : 1; // handle daily/weekly
+        const date = new Date(year, month, day);
+        return { key, date, ...value };
+      })
+      .sort((a, b) => a.date - b.date);
+
     return sorted.map(({ label, total }) => ({ label, total }));
 };
 
@@ -297,7 +301,7 @@ const hotspotsByCategory = useMemo(() => {
 
 
   const colorsByCategory = {
-    Accidents: "#ef4444",
+    Accident: "#ef4444",
     Assaults: "#ef4444",
     Crime: "#ef4444",
     Violence: "#ef4444",
@@ -318,32 +322,6 @@ const hotspotsByCategory = useMemo(() => {
     { key: "monthly", label: "Monthly" },
   ];
 
-  // --- Demographic Data (counts; displayed as percentages) ---
-  const genderData = [
-    { name: "Male", value: 480 },
-    { name: "Female", value: 520 },
-    { name: "Other", value: 50 },
-  ];
-
-  const ageData = [
-    { name: "0-17", value: 120 },
-    { name: "18-35", value: 450 },
-    { name: "36-60", value: 390 },
-    { name: "60+", value: 90 },
-  ];
-
-  const countyData = [
-    { name: "Nairobi", value: 300 },
-    { name: "Mombasa", value: 150 },
-    { name: "Kisumu", value: 120 },
-    { name: "Nakuru", value: 200 },
-    { name: "Garissa", value: 80 },
-  ];
-
-  const pieColors = ["#2563eb", "#f59e0b", "#10b981", "#ef4444", "#8b5cf6", "#06b6d4"];
-
-  // Label function to show percentages on slices
-  const percentLabel = ({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`;
 
   if (loading) {
   return (
@@ -525,94 +503,6 @@ const hotspotsByCategory = useMemo(() => {
               </li>
             ))}
           </ol>
-        </div>
-      </section>
-
-      {/* Demographic Insights (Pie charts show percentages) */}
-      <section className="space-y-6">
-        <h2 className="text-xl font-semibold">Demographic Insights</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
-          {/* Gender */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <h3 className="text-lg font-semibold mb-3">Gender Distribution</h3>
-            <ResponsiveContainer width="100%" height={290}>
-              <PieChart>
-                <Pie
-                  data={genderData}
-                  dataKey="value"
-                  nameKey="name"
-                  outerRadius={80}
-                  label={percentLabel}  
-                >
-                  {genderData.map((_, idx) => (
-                    <Cell key={idx} fill={pieColors[idx % pieColors.length]} />
-                  ))}
-                </Pie>
-                {/* Tooltip shows % as well */}
-                <Tooltip
-                  formatter={(value, name, props) => [
-                    `${(props.payload.percent * 100).toFixed(1)}%`,
-                    name,
-                  ]}
-                />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Age */}
-          <div className="rounded-2x1 border border-slate-200 bg-white p-4 shadow-sm">
-            <h3 className="text-lg font-semibold mb-3">Age Distribution</h3>
-            <ResponsiveContainer width="100%" height={290}>
-              <PieChart>
-                <Pie
-                  data={ageData}
-                  dataKey="value"
-                  nameKey="name"
-                  outerRadius={80}
-                  label={percentLabel}  
-                >
-                  {ageData.map((_, idx) => (
-                    <Cell key={idx} fill={pieColors[idx % pieColors.length]} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value, name, props) => [
-                    `${(props.payload.percent * 100).toFixed(1)}%`,
-                    name,
-                  ]}
-                />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* County */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <h3 className="text-lg font-semibold mb-3">County Distribution</h3>
-            <ResponsiveContainer width="100%" height={290}>
-              <PieChart>
-                <Pie
-                  data={countyData}
-                  dataKey="value"
-                  nameKey="name"
-                  outerRadius={80}
-                  label={percentLabel}  
-                >
-                  {countyData.map((_, idx) => (
-                    <Cell key={idx} fill={pieColors[idx % pieColors.length]} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value, name, props) => [
-                    `${(props.payload.percent * 100).toFixed(1)}%`,
-                    name,
-                  ]}
-                />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
         </div>
       </section>
 

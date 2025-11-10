@@ -9,7 +9,7 @@ import {
   getDocs,
 } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { useNavigate } from 'react-router-dom';
+import { useLocation,useNavigate } from 'react-router-dom';
 
 
 // --- tiny util: check if URL is a video
@@ -30,8 +30,10 @@ export default function Reports() {
   const [loading, setLoading] = useState(true);
   const [selectedReport, setSelectedReport] = useState(null);
   const [reportTypeFilter, setReportTypeFilter] = useState("All"); 
-  const [categoryFilter, setCategoryFilter] = useState("All");     
+  const [categoryFilter, setCategoryFilter] = useState("All");  
+
   const navigate = useNavigate();
+  const location = useLocation();
 
   // State for admin user check- reuse thisd in other admin pages
   const [isUserAdmin, setIsUserAdmin] = useState(false);
@@ -394,7 +396,10 @@ export default function Reports() {
               <div className="flex space-x-3">
                 {isUserAdmin && (
                   <button
-                    onClick={() => navigate(`/admin/assign-report/${selectedReport.docId}`)}
+                  onClick={() => {
+                      const pathPrefix = location.pathname.startsWith('/admin') ? '/admin' : '/org';
+                      navigate(`${pathPrefix}/assign-report/${selectedReport.docId}`);
+                    }}
                     className="px-3 py-1 text-sm rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white transition duration-150"
                   >
                     Assign Report
@@ -402,12 +407,26 @@ export default function Reports() {
                 )}
                 {isUserAdmin && (
                   <button
-                    onClick={() => navigate(`/admin/request-volunteer/${selectedReport.docId}`)}
+                    onClick={() => {
+                      const pathPrefix = location.pathname.startsWith('/admin') ? '/admin' : '/org';
+                      navigate(`${pathPrefix}/resolve-report/${selectedReport.docId}`);
+                    }}
+                    className="px-3 py-1 text-sm rounded-lg bg-green-500 hover:bg-green-600 text-white transition duration-150"
+                  >
+                    Resolve Report
+                  </button>
+                )}
+                {isUserAdmin && (
+                  <button
+                    onClick={() => {
+                      const pathPrefix = location.pathname.startsWith('/admin') ? '/admin' : '/org';
+                      navigate(`${pathPrefix}/request-volunteer/${selectedReport.docId}`);
+                    }}
                     className="px-3 py-1 text-sm rounded-lg border border-indigo-500 text-indigo-500 hover:bg-indigo-50 transition duration-150"
                   >
                     Request Volunteer
                   </button>
-                )}
+              )}
                 <button
                   onClick={() => setSelectedReport(null)}
                   className="text-gray-500 hover:text-gray-700 text-2xl font-bold ml-4"
@@ -449,14 +468,14 @@ export default function Reports() {
             </div>
             
             {/* Conditional Assignment Details Section */}
-            {(selectedReport.assignedLeader || selectedReport.assignedVolunteer) && (
-              <div className="mb-6">
+            {(selectedReport.assignedLeader || selectedReport.assignedVolunteer || selectedReport.resolution) && (
+              <div className="mb-6 border-b pb-6">
                 <h3 className="font-bold text-lg text-gray-800 mb-4">Assignment Status</h3>
 
                 {/* Assigned Leader Details */}
                 {selectedReport.assignedLeader && (
                   <div className="p-4 bg-blue-50 rounded-lg mb-4 border border-blue-200">
-                    <h4 className="font-semibold text-blue-800 mb-2">Assigned Leader/Authority</h4>
+                    <h4 className="font-semibold text-blue-800 mb-2">Assigned Authority</h4>
                     <div className="grid grid-cols-2 gap-2 text-sm text-blue-700">
                       <p><strong>Name:</strong> {selectedReport.assignedLeader.name}</p>
                       <p><strong>Email:</strong> {selectedReport.assignedLeader.email}</p>
@@ -468,14 +487,39 @@ export default function Reports() {
 
                 {/* Assigned Volunteer Details */}
                 {selectedReport.assignedVolunteer && (
-                  <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                    <h4 className="font-semibold text-green-800 mb-2">Assigned Volunteer/NGO</h4>
-                    <div className="grid grid-cols-2 gap-2 text-sm text-green-700">
+                  <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200 mb-4">
+                    <h4 className="font-semibold text-yellow-800 mb-2">Assigned Volunteer || NGO</h4>
+                    <div className="grid grid-cols-2 gap-2 text-sm text-yellow-700">
                       <p><strong>Name:</strong> {selectedReport.assignedVolunteer.name}</p>
                       <p><strong>Email:</strong> {selectedReport.assignedVolunteer.email}</p>
                       <p><strong>Contact:</strong> {selectedReport.assignedVolunteer.contact}</p>
                       <p><strong>Organization:</strong> {selectedReport.assignedVolunteer.organization}</p>
                     </div>
+                  </div>
+                )}
+
+                {selectedReport.resolution && (
+                  <div className="p-4 bg-green-50 rounded-lg mb-4 border border-green-200">
+                    <h4 className="font-semibold text-green-800 mb-2">Resolution Details</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-green-700">
+                      <p><strong>Status:</strong> {selectedReport.resolution.status}</p>
+                      <p><strong>Date when Found:</strong> {selectedReport.resolution.date || "N/A"}</p>
+                      <p><strong>Location Found:</strong> {selectedReport.resolution.location || "N/A"}</p>
+                      <p><strong>County Found:</strong> {selectedReport.resolution.county || "N/A"}</p>
+                      <p><strong>Resolved At:</strong> {new Date(selectedReport.resolution.resolvedAt).toLocaleString()}</p>
+                    </div>
+
+                    <div className="mt-3 text-sm text-green-700">
+                      <p><strong>Description:</strong></p>
+                      <p className="italic">{selectedReport.resolution.description || "No description provided."}</p>
+                    </div>
+
+                    {selectedReport.resolution.notes && (
+                      <div className="mt-2 text-sm text-green-700">
+                        <p><strong>Additional Notes || Evidence:</strong></p>
+                        <p className="italic">{selectedReport.resolution.notes}</p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

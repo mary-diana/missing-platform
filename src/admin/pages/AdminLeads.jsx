@@ -4,7 +4,6 @@ import {
   getDocs,
   doc,
   updateDoc,
-  addDoc, // Needed to add new volunteer requests
   query, // Needed for more specific queries
   where, // Needed for querying by email
 } from "firebase/firestore";
@@ -37,75 +36,6 @@ const MediaRenderer = ({ url, className }) => {
 
   return <img src={url} alt="Attached Media" className={className} />;
 };
-
-// --- VolunteerRequestForm Component (NEW)
-function VolunteerRequestForm({ leadId, onRequestSubmit }) {
-  const [volunteerName, setVolunteerName] = useState("");
-  const [organizationName, setOrganizationName] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState(null);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage(null);
-    try {
-      // Call the external function to handle the request submission
-      const result = await onRequestSubmit(leadId, volunteerName, organizationName);
-      if (result.success) {
-        setMessage(" Request successfully submitted for approval!");
-        setVolunteerName("");
-        setOrganizationName("");
-      } else {
-        setMessage(`Error: ${result.error}`);
-      }
-    } catch (err) {
-      setMessage(`Error: ${err.message}`);
-    }
-    setLoading(false);
-  };
-
-  return (
-    <div className="border-t pt-4">
-      <h3 className="font-semibold text-gray-800 mb-3">Request to Help/Volunteer</h3>
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <label className="text-sm font-medium">Your Name</label>
-        <input
-          type="text"
-          placeholder="eg John Doe"
-          value={volunteerName}
-          onChange={(e) => setVolunteerName(e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          required
-        />
-        <label className="text-sm font-medium">Organization Name</label>
-        <input
-          type="text"
-          placeholder="eg Local Community Watch"
-          value={organizationName}
-          onChange={(e) => setOrganizationName(e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-        />
-        <button
-          type="submit"
-          disabled={loading}
-          className={`w-full py-2 rounded-lg text-white font-semibold transition-all ${
-            loading
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-green-600 hover:bg-green-700"
-          }`}
-        >
-          {loading ? "Submitting Request..." : "Request to Help"}
-        </button>
-      </form>
-      {message && (
-        <p className="text-center text-sm mt-3 font-medium text-gray-700">
-          {message}
-        </p>
-      )}
-    </div>
-  );
-}
 
 // --- AssignLeadForm Component (Extracted from Modal for clarity)
 function AssignLeadForm({ leadId, onAssign }) {
@@ -189,13 +119,12 @@ function AssignLeadForm({ leadId, onAssign }) {
 
 
 
-// --- LeadDetailsModal Component
-function LeadDetailsModal({ lead, onClose, onAssign, onVolunteerRequest, userRole }) {
+// --- LeadDetailsModal Component (Simplified)
+function LeadDetailsModal({ lead, onClose, onAssign, userRole }) {
   if (!lead) return null;
 
-  // Determine which action to show based on the user's role
-  const isAdminOrModerator = ["Administrator", "Moderator", "Police"].includes(userRole);
-  const isVolunteer = userRole === "Volunteer";
+  // Only Administrator, Moderator, and Police can assign the lead
+  const isAdminOrModeratorOrPolice = ["Administrator", "Moderator"].includes(userRole);
 
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-70 flex items-center justify-center z-50 overflow-y-auto">
@@ -232,21 +161,6 @@ function LeadDetailsModal({ lead, onClose, onAssign, onVolunteerRequest, userRol
           </p>
         </div>
 
-        {/* New: Assigned To Details */}
-        {lead.assignedTo && (
-          <div className="mb-6 border-t pt-4">
-            <h3 className="font-semibold text-gray-800 mb-2 text-green-700">
-            Lead Status: {lead.status || "Assigned"}
-            </h3>
-            <div className="grid md:grid-cols-2 gap-2 text-gray-700 text-sm">
-              <p><strong>Assigned To:</strong> {lead.assignedTo.name}</p>
-              <p><strong>Organization:</strong> {lead.assignedTo.organization}</p>
-              <p><strong>Tracking ID:</strong> {lead.assignedTo.docId || "N/A"}</p>
-              <p><strong>Assigned Date:</strong> {lead.assignedTo.assignedAt?.toDate().toLocaleString() || "N/A"}</p>
-            </div>
-          </div>
-        )}
-
         {/* Media Section */}
         <div className="mb-6 border-t pt-4">
           <h3 className="font-semibold text-gray-800 mb-2">Attached Media</h3>
@@ -278,45 +192,50 @@ function LeadDetailsModal({ lead, onClose, onAssign, onVolunteerRequest, userRol
           )}
         </div>
 
-        {/* Action Section based on Role */}
-        {isAdminOrModerator && (
-          <AssignLeadForm leadId={lead.id} onAssign={onAssign} />
-        )}
-        
-        {isVolunteer && (
-          <VolunteerRequestForm leadId={lead.id} onRequestSubmit={onVolunteerRequest} />
+        {/* Assigned To Details */}
+        {lead.assignedTo && (
+          <div className="mb-6 border-t pt-4">
+            <h3 className="font-semibold text-green-800 mb-2 text-indigo-700">
+              📌 Lead Status: {lead.status || "Assigned"}
+            </h3>
+            <div className="grid md:grid-cols-2 gap-2 text-gray-700 text-sm">
+              <p><strong>Assigned To:</strong> {lead.assignedTo.name}</p>
+              <p><strong>Organization:</strong> {lead.assignedTo.organization}</p>
+              <p><strong>DOC ID:</strong> {lead.assignedTo.docId || "N/A"}</p>
+              <p><strong>Assigned Date:</strong> {lead.assignedTo.assignedAt?.toDate().toLocaleString() || "N/A"}</p>
+            </div>
+          </div>
         )}
 
-        {(!isAdminOrModerator && !isVolunteer) && (
-             <div className="border-t pt-4 text-center text-gray-500 italic">
-                Log in as an Administrator, Moderator, or Police to assign this lead, or as a Volunteer to request to help.
-             </div>
+        {/* Action Section based on Role */}
+        {isAdminOrModeratorOrPolice ? (
+          <AssignLeadForm leadId={lead.id} onAssign={onAssign} />
+        ) : (
+          <div className="border-t pt-4 text-center text-gray-500 italic">
+            Log in as an Administrator, Moderator or Police to assign or update this lead.
+          </div>
         )}
-        
+
       </div>
     </div>
   );
 }
 
-
-
-// --- Main LeadsManagement Component
+// --- Main OrgLeads Component
 export default function LeadsManagement() {
   const [leads, setLeads] = useState([]);
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [selectedLead, setSelectedLead] = useState(null);
 
-  // New State for Role-Based Access Control
-  const [userRole, setUserRole] = useState(null); 
+  // State for Role-Based Access Control
+  const [userRole, setUserRole] = useState(null);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
 
-  // State for Volunteer Requests (NEW)
-  const [volunteerRequests, setVolunteerRequests] = useState([]);
+  // Admin/Moderator/Police check is used to show the assignment form
+  const isAdminOrModeratorOrPolice = ["Administrator", "Moderator", "Police"].includes(userRole);
 
-  const isAdminOrModerator = ["Administrator", "Moderator", "Police"].includes(userRole);
-
-  // --- Role Fetching Logic (UPDATED)
+  // --- Role Fetching Logic
   useEffect(() => {
     const auth = getAuth();
 
@@ -327,7 +246,7 @@ export default function LeadsManagement() {
         return;
       }
       try {
-        const adminsRef = collection(db, "adminusers"); 
+        const adminsRef = collection(db, "adminusers");
         // Query to find the user's specific document by email
         const q = query(adminsRef, where("email", "==", userEmail));
         const querySnapshot = await getDocs(q);
@@ -335,7 +254,7 @@ export default function LeadsManagement() {
         if (!querySnapshot.empty) {
             // Found the user, get their orgrole
             const userData = querySnapshot.docs[0].data();
-            setUserRole(userData.orgrole || null); // e.g., 'Administrator', 'Volunteer', 'Police'
+            setUserRole(userData.orgrole || null);
         } else {
             setUserRole(null);
         }
@@ -357,7 +276,7 @@ export default function LeadsManagement() {
     });
 
     // Cleanup subscription on unmount
-    return () => unsubscribe(); 
+    return () => unsubscribe();
   }, []);
   // --- END Role Fetching Logic
 
@@ -377,18 +296,16 @@ export default function LeadsManagement() {
 
   useEffect(() => {
     fetchLeads();
-    fetchVolunteerRequests();
   }, []);
 
   const filteredLeads = leads.filter((lead) =>
     lead.description?.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Assign a lead to someone
+  // Assign a lead to someone (updates the single 'assignedTo' field)
   const assignLead = async (leadId, assigneeName, organizationName, docId) => {
     try {
       const leadRef = doc(db, "leads", leadId);
-
       await updateDoc(leadRef, {
         assignedTo: {
           name: assigneeName,
@@ -407,73 +324,6 @@ export default function LeadsManagement() {
     }
   };
 
-  // NEW: Handle Volunteer Request Submission
-  const volunteerRequest = async (leadId, volunteerName, organizationName) => {
-    try {
-        await addDoc(collection(db, "volunteerRequests"), {
-            leadId: leadId,
-            volunteerName: volunteerName,
-            organizationName: organizationName || "Independent",
-            requestedByEmail: getAuth().currentUser.email, // Store the requester's email
-            status: "Pending", // Requires an admin/moderator to approve
-            requestedAt: new Date(),
-        });
-        return { success: true };
-    } catch (error) {
-        console.error("Error submitting volunteer request:", error);
-        return { success: false, error: error.message };
-    }
-  };
-
-  // Function to Fetch Volunteer Requests
-  const fetchVolunteerRequests = async () => {
-  try {
-    const q = query(collection(db, "volunteerRequests"), where("status", "==", "Pending"));
-    const querySnapshot = await getDocs(q);
-    const requestsData = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setVolunteerRequests(requestsData);
-  } catch (error) {
-    console.error("Error fetching volunteer requests:", error);
-    // You must handle errors
-  }
-};
-
-// Function to approve a volunteer request
-const approveRequest = async (requestId, leadId) => {
-      try {
-          const requestRef = doc(db, "volunteerRequests", requestId);
-          await updateDoc(requestRef, {
-              status: "Approved",
-              approvedAt: new Date(),
-          });
-
-          // Optionally, update the lead itself to show pending assignments/helpers
-          // This is complex, but for simplicity, we focus on the request status.
-
-          await fetchVolunteerRequests(); // Refresh the requests list
-          return { success: true };
-      } catch (error) {
-          // ... error handling
-      }
-  };
-
-// Function to reject a volunteer request
-  const rejectRequest = async (requestId) => {
-      try {
-          const requestRef = doc(db, "volunteerRequests", requestId);
-          await updateDoc(requestRef, {
-              status: "Rejected",
-              rejectedAt: new Date(),
-          });
-          await fetchVolunteerRequests(); // Refresh the requests list
-          return { success: true };
-      } catch (error) {
-          // ... error handling
-      }
-  };
 
   if (isLoadingUser) {
       return (
@@ -490,7 +340,7 @@ const approveRequest = async (requestId, leadId) => {
         <h1 className="text-3xl font-bold">Leads Management</h1>
       </div>
       <p className="text-gray-500 mb-6">
-        Manage leads provided by the public on missing persons. Current Role: <strong className="text-blue-600">{userRole || "Guest"}</strong>
+        Manage leads provided by the public on missing persons.
       </p>
 
       {/* Dashboard Card */}
@@ -502,42 +352,9 @@ const approveRequest = async (requestId, leadId) => {
             {leads.length}
           </p>
         </div>
+        {/* You can add more dashboard cards here based on 'assigned' status */}
       </div>
 
-      {isAdminOrModerator && volunteerRequests.length > 0 && (
-      <div className="border p-4 rounded-lg bg-blue-50">
-          <h2 className="text-xl font-bold mb-3 text-gray-800">
-              Pending Volunteer Requests ({volunteerRequests.length})
-          </h2>
-          {/* A simple list or table to display each request */}
-          <div className="space-y-3">
-              {volunteerRequests
-                  .filter(req => req.status === "Pending") // Show only pending ones
-                  .map(req => (
-                      <div key={req.id} className="p-3 border rounded flex justify-between items-center bg-white">
-                          <p className="text-sm">
-                              **{req.volunteerName}** wants to help with Lead ID: {req.leadId}
-                              <span className="text-xs italic text-gray-500 block"> Org: {req.organizationName}</span>
-                          </p>
-                          <div className="space-x-2">
-                              <button 
-                                  onClick={() => approveRequest(req.id, req.leadId)} 
-                                  className="bg-green-500 text-white text-xs px-3 py-1 rounded hover:bg-green-600"
-                              >
-                                  Approve
-                              </button>
-                              <button 
-                                  onClick={() => rejectRequest(req.id)}
-                                  className="bg-red-500 text-white text-xs px-3 py-1 rounded hover:bg-red-600"
-                              >
-                                  Reject
-                              </button>
-                          </div>
-                      </div>
-                  ))}
-          </div>
-      </div>
-)}
 
       {/* Search */}
       <div className="mb-4">
@@ -612,8 +429,8 @@ const approveRequest = async (requestId, leadId) => {
           lead={selectedLead}
           onClose={() => setShowModal(false)}
           onAssign={assignLead}
-          onVolunteerRequest={volunteerRequest} // Pass the new handler
           userRole={userRole} // Pass the user role for RBAC
+
         />
       )}
     </div>

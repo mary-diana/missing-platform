@@ -1,10 +1,9 @@
-// src/pages/OrgRules.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeftCircle } from "lucide-react";
 import downloadImage from "../../assets/download.jfif";
 
-export default function OrgRules() {
+export default function AdminRules() {
   const navigate = useNavigate();
 
   const [openIndex, setOpenIndex] = useState(null);
@@ -103,7 +102,7 @@ export default function OrgRules() {
 
         {/* Back Button */}
         <button
-          onClick={() => navigate("/org/dashboard")}
+          onClick={() => navigate("/admin/dashboard")}
           className="absolute top-6 left-6 flex items-center gap-2 text-white bg-black/40 hover:bg-black/60 px-4 py-2 rounded-full transition"
         >
           <ArrowLeftCircle size={20} />

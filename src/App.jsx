@@ -29,6 +29,8 @@ import AdminVolunteer from "./admin/pages/AdminVolunteer";
 import LeadsManagement from "./admin/pages/AdminLeads";
 import RequestVolunteerPage from "./admin/pages/RequestVolunteerPage";
 import AssignReportPage from "./admin/pages/AssignReportPage";
+import ResolveReportPage from "./admin/pages/ResolveReportPage";
+import AdminRules from "./admin/pages/AdminRules";
 
 //Organizations
 import OrgDashboard from "./org/pages/OrgDashboard";
@@ -93,6 +95,8 @@ function App() {
           <Route path="/admin/leads" element={<AdminLayout><LeadsManagement /></AdminLayout>} />
           <Route path="/admin/request-volunteer/:docId" element={<AdminLayout><RequestVolunteerPage /></AdminLayout>} />
           <Route path="/admin/assign-report/:docId" element={<AdminLayout><AssignReportPage /></AdminLayout>} />
+          <Route path="/admin/resolve-report/:docId" element={<AdminLayout><ResolveReportPage /></AdminLayout>} />
+          <Route path="/admin/rules" element={<AdminLayout><AdminRules /></AdminLayout>} />
 
           {/* Organization Pages */}
           <Route path="/org/dashboard" element={<OrgLayout><OrgDashboard /></OrgLayout>} />
@@ -101,6 +105,9 @@ function App() {
           <Route path="/org/reports" element={<OrgLayout><OrgReports /></OrgLayout>} />
           <Route path="/org/volunteers" element={<OrgLayout><OrgVolunteerManagement /></OrgLayout>} />
           <Route path="/org/rules" element={<OrgLayout><OrgRules /></OrgLayout>} />
+          <Route path="/org/resolve-report/:docId" element={<OrgLayout><ResolveReportPage redirectTo="/org/dashboard" /></OrgLayout>} />
+          <Route path="/org/request-volunteer/:docId" element={<OrgLayout><RequestVolunteerPage redirectTo="/org/dashboard" /></OrgLayout>} />
+          <Route path="/org/assign-report/:docId" element={<OrgLayout><AssignReportPage redirectTo="/org/dashboard" /></OrgLayout>} />
         </Routes>
       </Router>
     </AuthProvider>
