@@ -14,6 +14,7 @@ export default function Sidebar() {
     { name: "Organizations", icon: <Building size={18} color="blue" />, path: "/admin/organizations" },
     { name: "Volunteers", icon: <UserPlus size={18} color="blue" />, path: "/admin/volunteers" },
     { name: "Leads", icon: <Lightbulb size={18} color="blue" />, path: "/admin/leads" },
+    { name: "Resources", icon: <BarChart2 size={18} color="blue" />, path: "/admin/resource-management" },
     { name: "Announcements", icon: <Megaphone size={18} color="blue" />, path: "/admin/announcements" },
     { name: "Rules", icon: <Scale size={18} color="blue" />, path: "/admin/rules" },
   ];

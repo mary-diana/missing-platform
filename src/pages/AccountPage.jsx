@@ -662,14 +662,24 @@ export default function AccountPage() {
 
       <div className="w-64 bg-gray-50 p-4 rounded-lg">
         <h3 className="text-lg font-semibold mb-2">Tips</h3>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-blue-600">
           Stay informed about missing persons in your county by enabling alerts. Notifications
           will appear here automatically.
         </p>
         
-        <p className="text-sm text-black">
+        <p className="text-sm text-black mt-4">
           Reminder: If your posts are rejected, we request to delete it immediately. Failure to
           comply may result to deletion of the post without prior notice or permission.
+        </p>
+
+        <p className="text-sm text-black mt-4">
+        Only report missing persons or dangers at the navigaation bar above. Do not create posts here.If you wish 
+        to support,volunteer or provide leads click on the support section. Only logged in users can create reports.
+        </p>
+
+        <p className="text-sm text-black mt-4">
+        If you wish to access the analytics dashboard, click on the reports tab in the navigation bar above.Choose either
+        the map or analytics button.
         </p>
       </div>
     </div>

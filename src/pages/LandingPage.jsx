@@ -165,10 +165,7 @@ export default function LandingPage() {
       <footer className="bg-white border-t py-6 px-6 text-sm text-gray-600">
         <div className="max-w-6xl mx-auto flex justify-between">
           <div className="flex space-x-6">
-            <a href="#">About Us</a>
-            <a href="#">Contact</a>
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
+            
           </div>
           <span>©2025 Find Them. All rights reserved.</span>
         </div>

@@ -31,6 +31,7 @@ import RequestVolunteerPage from "./admin/pages/RequestVolunteerPage";
 import AssignReportPage from "./admin/pages/AssignReportPage";
 import ResolveReportPage from "./admin/pages/ResolveReportPage";
 import AdminRules from "./admin/pages/AdminRules";
+import ResourceManagement from "./admin/pages/ResourceManagement";
 
 //Organizations
 import OrgDashboard from "./org/pages/OrgDashboard";
@@ -97,6 +98,7 @@ function App() {
           <Route path="/admin/assign-report/:docId" element={<AdminLayout><AssignReportPage /></AdminLayout>} />
           <Route path="/admin/resolve-report/:docId" element={<AdminLayout><ResolveReportPage /></AdminLayout>} />
           <Route path="/admin/rules" element={<AdminLayout><AdminRules /></AdminLayout>} />
+          <Route path="/admin/resource-management" element={<AdminLayout><ResourceManagement /></AdminLayout>} />
 
           {/* Organization Pages */}
           <Route path="/org/dashboard" element={<OrgLayout><OrgDashboard /></OrgLayout>} />
