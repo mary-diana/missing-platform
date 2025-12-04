@@ -6,6 +6,7 @@ import {
   FileText,
   Megaphone,
   Lightbulb,
+  Map,
   LogOut,
 } from "lucide-react";
 import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
@@ -66,6 +67,7 @@ export default function Sidebar() {
     ...(canViewLeads
       ? [{ name: "Leads", icon: <Lightbulb size={18} color="blue" />, path: "/org/leads" }]
       : []),
+    { name: "Hotspot Map", icon: <Map size={18} color="blue" />, path: "/org/hotspot-map" },
     { name: "Announcements", icon: <Megaphone size={18} color="blue" />, path: "/org/announcements" },
   ];
 

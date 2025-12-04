@@ -32,6 +32,7 @@ import AssignReportPage from "./admin/pages/AssignReportPage";
 import ResolveReportPage from "./admin/pages/ResolveReportPage";
 import AdminRules from "./admin/pages/AdminRules";
 import ResourceManagement from "./admin/pages/ResourceManagement";
+import HotspotMap from "./admin/pages/HotspotMap";
 
 //Organizations
 import OrgDashboard from "./org/pages/OrgDashboard";
@@ -41,10 +42,12 @@ import OrgAnnouncements from "./org/pages/OrgAnnouncements";
 import OrgReports from "./org/pages/OrgReports";
 import OrgVolunteerManagement from "./org/pages/OrgVolunteer";
 import OrgRules from "./org/pages/OrgRules";
+import OrgHotspotMap from "./org/pages/OrgHotspotMap";
 
 // Auth Context & Protected Route
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+
 
 function App() {
   
@@ -99,6 +102,7 @@ function App() {
           <Route path="/admin/resolve-report/:docId" element={<AdminLayout><ResolveReportPage /></AdminLayout>} />
           <Route path="/admin/rules" element={<AdminLayout><AdminRules /></AdminLayout>} />
           <Route path="/admin/resource-management" element={<AdminLayout><ResourceManagement /></AdminLayout>} />
+          <Route path="/admin/hotspot-map" element={<AdminLayout><HotspotMap /></AdminLayout>} />
 
           {/* Organization Pages */}
           <Route path="/org/dashboard" element={<OrgLayout><OrgDashboard /></OrgLayout>} />
@@ -110,6 +114,7 @@ function App() {
           <Route path="/org/resolve-report/:docId" element={<OrgLayout><ResolveReportPage redirectTo="/org/dashboard" /></OrgLayout>} />
           <Route path="/org/request-volunteer/:docId" element={<OrgLayout><RequestVolunteerPage redirectTo="/org/dashboard" /></OrgLayout>} />
           <Route path="/org/assign-report/:docId" element={<OrgLayout><AssignReportPage redirectTo="/org/dashboard" /></OrgLayout>} />
+          <Route path="/org/hotspot-map" element={<OrgLayout><OrgHotspotMap /></OrgLayout>} />
         </Routes>
       </Router>
     </AuthProvider>

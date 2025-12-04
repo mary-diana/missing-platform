@@ -19,6 +19,7 @@ export default function ResolveReportPage() {
   const [resolutionDate, setResolutionDate] = useState("");
   const [description, setDescription] = useState("");
   const [additionalNotes, setAdditionalNotes] = useState("");
+  const [terrain, setTerrain] = useState("");
 
   useEffect(() => {
     const fetchReport = async () => {
@@ -43,9 +44,10 @@ export default function ResolveReportPage() {
             setStatus(reportData.resolution.status || "");
             setFoundLocation(reportData.resolution.location || "");
             setFoundCounty(reportData.resolution.county || "");
-            setResolutionDate(reportData.resolution.date || "");
+            setResolutionDate(reportData.resolution.founddate || "");
             setDescription(reportData.resolution.description || "");
             setAdditionalNotes(reportData.resolution.notes || "");
+            setTerrain(reportData.resolution.terrain || ""); 
           }
         } else {
           setError("Report not found.");
@@ -72,7 +74,8 @@ export default function ResolveReportPage() {
         status,
         location: foundLocation,
         county: foundCounty,
-        date: resolutionDate,
+        terrain,
+        founddate: resolutionDate,
         description,
         notes: additionalNotes,
         resolvedAt: new Date().toISOString(),
@@ -169,8 +172,32 @@ export default function ResolveReportPage() {
         </div>
 
         <div>
+          <label htmlFor="status" className="block text-sm font-medium text-gray-700">
+            Terrain Type
+          </label>
+          <select
+            id="terrain"
+            value={terrain}
+            onChange={(e) => setTerrain(e.target.value)}
+            className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+            required
+          >
+            <option value="">Select Terrain Type</option>
+            <option value="River">River</option>
+            <option value="Highway">Highway</option>
+            <option value="Forest">Forest</option>
+            <option value="Urban">Urban</option>
+            <option value="Rural">Rural</option>
+            <option value="Unfounded">Road</option>
+            <option value="Desert">Desert</option>
+            <option value="Mountain">Mountain/Hill</option>
+            <option value="Water body">Water body</option>
+          </select>
+        </div>
+
+        <div>
           <label htmlFor="resolutionDate" className="block text-sm font-medium text-gray-700">
-            Resolution Date
+            Resolution Date (Date when the person was found)
           </label>
           <input
             type="date"

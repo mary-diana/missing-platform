@@ -1,22 +1,23 @@
 // src/admin/components/Sidebar.jsx
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Home, FileText, Users, BarChart2, Megaphone, Building, UserPlus, Lightbulb, LogOut,Scale} from "lucide-react";
+import { Home, FileText, Users, BarChart2, Megaphone, Building, UserPlus, Lightbulb, LogOut,Scale,Map} from "lucide-react";
 import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
 import { getAuth, signOut } from "firebase/auth";
 import { db } from "../../firebase";
 
 export default function Sidebar() {
   const menuItems = [
-    { name: "Dashboard", icon: <Home size={18} color="blue" />, path: "/admin/dashboard" },
-    { name: "Reports", icon: <FileText size={18} color="blue" />, path: "/admin/reports" },
-    { name: "Users", icon: <Users size={18} color="blue" />, path: "/admin/users" },
-    { name: "Organizations", icon: <Building size={18} color="blue" />, path: "/admin/organizations" },
-    { name: "Volunteers", icon: <UserPlus size={18} color="blue" />, path: "/admin/volunteers" },
-    { name: "Leads", icon: <Lightbulb size={18} color="blue" />, path: "/admin/leads" },
-    { name: "Resources", icon: <BarChart2 size={18} color="blue" />, path: "/admin/resource-management" },
-    { name: "Announcements", icon: <Megaphone size={18} color="blue" />, path: "/admin/announcements" },
-    { name: "Rules", icon: <Scale size={18} color="blue" />, path: "/admin/rules" },
+    { name: "Dashboard", icon: <Home size={16} color="blue" />, path: "/admin/dashboard" },
+    { name: "Reports", icon: <FileText size={16} color="blue" />, path: "/admin/reports" },
+    { name: "Leads", icon: <Lightbulb size={16} color="blue" />, path: "/admin/leads" },
+    { name: "Hotspot Map", icon: <Map size={16} color="blue" />, path: "/admin/hotspot-map" },
+    { name: "Resources", icon: <BarChart2 size={16} color="blue" />, path: "/admin/resource-management" },
+    { name: "Announcements", icon: <Megaphone size={16} color="blue" />, path: "/admin/announcements" },
+    { name: "Users", icon: <Users size={16} color="blue" />, path: "/admin/users" },
+    { name: "Organizations", icon: <Building size={16} color="blue" />, path: "/admin/organizations" },
+    { name: "Volunteers", icon: <UserPlus size={16} color="blue" />, path: "/admin/volunteers" },
+    { name: "Rules", icon: <Scale size={16} color="blue" />, path: "/admin/rules" },
   ];
 
   const [userRole, setUserRole] = useState(null);
